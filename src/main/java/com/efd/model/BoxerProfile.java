@@ -1,5 +1,8 @@
 package com.efd.model;
 
+import com.efd.core.GolveTypeEnum;
+import com.efd.core.SkillLavelEnum;
+import com.efd.core.StanceEnum;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -177,7 +180,7 @@ public class BoxerProfile {
         object.put("class", this);
         object.put("id", id);
         object.put("chest", chest);
-        object.put("gloveType", gloveType);
+        object.put("gloveType", (gloveType!=null)?gloveType: GolveTypeEnum.DEFAULT);
         object.put("height", height);
         object.put("inseam", inseam);
         object.put("reach", reach);
@@ -187,8 +190,8 @@ public class BoxerProfile {
         object.put("leftDeviceGeneration", leftDeviceGeneration);
         object.put("rightDeviceSensorName", rightDeviceSensorName);
         object.put("rightDeviceGeneration", rightDeviceGeneration);
-        object.put("skillLevel", skillLevel);
-        object.put("stance", stance);
+        object.put("skillLevel", (skillLevel!=null)?skillLevel: SkillLavelEnum.DEFAULT);
+        object.put("stance", (stance!=null)?stance: StanceEnum.TRADITIONAL);
         object.put("waist", waist);
         object.put("weight", weight);
 

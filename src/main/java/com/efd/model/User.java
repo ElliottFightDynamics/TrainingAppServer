@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by volodymyr on 13.06.17.
@@ -33,7 +34,6 @@ public class User {
     @JoinColumn(name = "id")
     private QuestionAnswer questionAnswer;
 
-
     private String dateOfBirthday;
     private boolean gender;
     private String photo;
@@ -46,6 +46,15 @@ public class User {
     @JoinColumn(name = "user")
     private BoxerProfile boxerProfile;
     private int trainingSummary;
+    private String secureToken;
+
+    public String getSecureToken() {
+        return secureToken;
+    }
+
+    public void setSecureToken(String secureToken) {
+        this.secureToken = secureToken;
+    }
 
     public int getTrainingSummary() {
         return trainingSummary;
@@ -210,20 +219,20 @@ public class User {
         object.put("firstName", firstName);
         object.put("lastName", lastName);
         object.put("username", userName);
-        object.put("zipCode", zipCode);
+        object.put("zipcode", zipCode);
 
         JSONObject countryJSON = new JSONObject();
         countryJSON.put("class",country);
         countryJSON.put("id", country.getId());
         object.put("country", countryJSON);
 
-        object.put("email", email);
+        object.put("emailId", email);
         object.put("password", password);
         object.put("question", question);
         object.put("questionAnswer", questionAnswer);
-        object.put("dateOfBirthday", dateOfBirthday);
+        object.put("dateOfBirth", (dateOfBirthday!=null)?dateOfBirthday:JSONObject.NULL);
         object.put("gender", gender);
-        object.put("photo", photo);
+        object.put("photo", (photo!=null)?photo:JSONObject.NULL);
         object.put("accountExpired", accountExpired);
         object.put("accountLocked", accountLocked);
         object.put("enabled", enabled);

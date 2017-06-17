@@ -16,6 +16,10 @@ public interface IUserDao extends CrudRepository<User, Long>{
     User findUserByEmail(String email);
 
     default boolean auth(String username, String password) {
-        return this.findUserByUserNameAndEmail(username, username).getPassword().equals(password);
+        return findUserByUserNameAndEmail(username, username).getPassword().equals(password);
+    }
+
+    default boolean confirmToken(String username, String token) {
+        return findUserByEmail(username).getSecureToken().equals(token);
     }
 }

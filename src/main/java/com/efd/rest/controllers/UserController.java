@@ -1,5 +1,6 @@
 package com.efd.rest.controllers;
 
+import com.efd.core.Secure;
 import com.efd.dao.*;
 import com.efd.model.*;
 import org.json.JSONObject;
@@ -68,13 +69,11 @@ public class UserController {
         user.setZipCode(Integer.parseInt(httpServletRequest.getParameter("zipcode")));
         Country country = iCountryDao.findOne(Long.valueOf(httpServletRequest.getParameter("countryId")));
         user.setCountry(country);
+        user.setDateOfBirthday(null);
         user.setEmail(httpServletRequest.getParameter("emailId"));
+        user.setSecureToken(Secure.generateToken());
 
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = digest.digest(httpServletRequest.getParameter("password").getBytes(StandardCharsets.UTF_8));
-        String encoded = Base64.getEncoder().encodeToString(hash);
-
-        user.setPassword(sha256(httpServletRequest.getParameter("password")));
+        user.setPassword(Secure.sha256(httpServletRequest.getParameter("password")));
         Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("quesId")));
         user.setQuestion(question);
         QuestionAnswer questionAnswer = new QuestionAnswer();
@@ -91,6 +90,9 @@ public class UserController {
         boxerProfile.setRightDeviceGeneration(httpServletRequest.getParameter("rightDeviceGeneration"));
         user.setBoxerProfile(boxerProfile);
 
+        iQuestionsAnswer.save(questionAnswer);
+        iCountryDao.save(country);
+        iBoxerProfileDao.save(boxerProfile);
         iUserDao.save(user);
 
         try {
@@ -98,33 +100,13 @@ public class UserController {
             resultJson.put("success", true);
             resultJson.put("message", "Trainee successfully created");
             resultJson.put("traineeServerId", user.getId());
-            //TODO
-            resultJson.put("secureAccessToken", "TO DO");
+            resultJson.put("secureAccessToken", user.getSecureToken());
 
             httpServletResponse.setContentType("application/json");
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static String sha256(String base) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(base.getBytes("UTF-8"));
-            StringBuffer hexString = new StringBuffer();
-
-            for (int i = 0; i < hash.length; i++) {
-                String hex = Integer.toHexString(0xff & hash[i]);
-                if (hex.length() == 1)
-                    hexString.append('0');
-                hexString.append(hex);
-            }
-
-            return hexString.toString();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
         }
     }
 
@@ -141,12 +123,14 @@ public class UserController {
 
                 User user = iUserDao.findUserByUserNameAndEmail(username, username);
                 BoxerProfile boxerProfile = user.getBoxerProfile();
+                String token = Secure.generateToken();
+                user.setSecureToken(token);
+                iUserDao.save(user);
 
                 JSONObject resultJson = new JSONObject();
                 resultJson.put("success",true);
                 resultJson.put("message","Login successfully");
-                //TODO
-                resultJson.put("secureAccessToken","TO DO");
+                resultJson.put("secureAccessToken",token);
                 resultJson.put("user", user.getJSON());
                 resultJson.put("boxerProfile", boxerProfile.getJSON());
                 resultJson.put("trainingSummary", "");
