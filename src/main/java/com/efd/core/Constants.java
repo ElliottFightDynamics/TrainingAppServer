@@ -6,7 +6,7 @@ package com.efd.core;
 public class Constants {
 
     public static String DEFAULT_GOLVE_TYPE = "mma";
-    public static String DEFAULT_SKILL_LAVEL = "Novice";
+    public static String DEFAULT_SKILL_LEVEL = "Novice";
     public static String DEFAULT_STANCE = "Traditional- Left foot front";
 
 }

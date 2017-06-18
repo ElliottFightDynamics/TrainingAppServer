@@ -188,7 +188,7 @@ public class BoxerProfile {
         object.put("leftDeviceGeneration", leftDeviceGeneration);
         object.put("rightDeviceSensorName", rightDeviceSensorName);
         object.put("rightDeviceGeneration", rightDeviceGeneration);
-        object.put("skillLevel", (skillLevel!=null) ? skillLevel : Constants.DEFAULT_SKILL_LAVEL);
+        object.put("skillLevel", (skillLevel!=null) ? skillLevel : Constants.DEFAULT_SKILL_LEVEL);
         object.put("stance", (stance!=null) ? stance : Constants.DEFAULT_STANCE);
         object.put("waist", waist);
         object.put("weight", weight);

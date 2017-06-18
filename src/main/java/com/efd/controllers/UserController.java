@@ -145,4 +145,34 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/recovery/email", method = RequestMethod.POST)
+    public void sendPasswordByEmail(HttpServletRequest httpServletRequest,
+                             HttpServletResponse httpServletResponse) {
+        try {
+            User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+            String newPwd = Secure.generateNewPasswor();
+            user.setPassword(Secure.sha256(newPwd));
+
+            iUserDao.save(user);
+
+            boolean status = Secure.sendEmail(newPwd, user.getEmail());
+
+            JSONObject resultJson = new JSONObject();
+            resultJson.put("success",status);
+            resultJson.put("sendStatus",((status)?("New password has sent to your email"):("Sending fail")));
+            httpServletResponse.setContentType("application/json");
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @RequestMapping(value = "/recovery/question", method = RequestMethod.POST)
+    public void sendPasswordByQuestion(HttpServletRequest httpServletRequest,
+                                    HttpServletResponse httpServletResponse) {
+
+    }
+
 }
