@@ -2,26 +2,27 @@ package com.efd.core;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
 
 /**
  * Created by volodymyr on 17.06.17.
  */
 public class Secure {
 
-    public static String generateToken() {
+    public String generateToken() {
         SecureRandom random = new SecureRandom();
         byte bytes[] = new byte[20];
         random.nextBytes(bytes);
         return Arrays.toString(bytes);
     }
 
-    public static String sha256(String base) {
+    public String sha256(String base) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(base.getBytes("UTF-8"));
@@ -40,7 +41,7 @@ public class Secure {
         }
     }
 
-    public static boolean sendEmail(String newPassword, String email) {
+    public boolean sendEmail(String newPassword, String email) throws IOException {
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.socketFactory.port", "465");
@@ -48,10 +49,16 @@ public class Secure {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.port", "465");
 
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("data.properties");
+        properties.load(inputStream);
+        String username = properties.getProperty("mail.username");
+        String password = properties.getProperty("mail.password");
+
         Session session = Session.getDefaultInstance(props,
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("intro85@gmail.com","44919143211");
+                        return new PasswordAuthentication(username,password);
                     }
                 });
 
@@ -73,7 +80,7 @@ public class Secure {
 
     }
 
-    public static String generateNewPasswor() {
+    public String generateNewPasswor() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
         return RandomStringUtils.random( 8, characters );
     }

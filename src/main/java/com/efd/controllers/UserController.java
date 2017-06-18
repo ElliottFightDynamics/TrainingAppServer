@@ -41,6 +41,8 @@ public class UserController {
         this.iBoxerProfileDao = iBoxerProfileDao;
     }
 
+    Secure secure = new Secure();
+
     @RequestMapping(value = "/isUnRegisteredUser", method = RequestMethod.POST)
     public void userEmailRegistrationStatus(HttpServletRequest httpServletRequest,
                                             HttpServletResponse httpServletResponse) {
@@ -71,9 +73,9 @@ public class UserController {
         user.setCountry(country);
         user.setDateOfBirthday(null);
         user.setEmail(httpServletRequest.getParameter("emailId"));
-        user.setSecureToken(Secure.generateToken());
+        user.setSecureToken(secure.generateToken());
 
-        user.setPassword(Secure.sha256(httpServletRequest.getParameter("password")));
+        user.setPassword(secure.sha256(httpServletRequest.getParameter("password")));
         Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("quesId")));
         user.setQuestion(question);
         QuestionAnswer questionAnswer = new QuestionAnswer();
@@ -123,7 +125,7 @@ public class UserController {
 
                 User user = iUserDao.findUserByUserNameAndEmail(username, username);
                 BoxerProfile boxerProfile = user.getBoxerProfile();
-                String token = Secure.generateToken();
+                String token = secure.generateToken();
                 user.setSecureToken(token);
                 iUserDao.save(user);
 
@@ -150,12 +152,12 @@ public class UserController {
                              HttpServletResponse httpServletResponse) {
         try {
             User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
-            String newPwd = Secure.generateNewPasswor();
-            user.setPassword(Secure.sha256(newPwd));
+            String newPwd = secure.generateNewPasswor();
+            user.setPassword(secure.sha256(newPwd));
 
             iUserDao.save(user);
 
-            boolean status = Secure.sendEmail(newPwd, user.getEmail());
+            boolean status = secure.sendEmail(newPwd, user.getEmail());
 
             JSONObject resultJson = new JSONObject();
             resultJson.put("success",status);
