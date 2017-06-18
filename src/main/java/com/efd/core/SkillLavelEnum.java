@@ -5,7 +5,7 @@ package com.efd.core;
  */
 public enum SkillLavelEnum {
 
-    DEFAULT("default");
+    NOVICE("Novice");
 
     private String value;
 

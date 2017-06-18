@@ -1,5 +1,6 @@
 package com.efd.rest.controllers;
 
+import com.efd.dao.IBoxerProfileDao;
 import com.efd.dao.IUserDao;
 import com.efd.model.BoxerProfile;
 import com.efd.model.User;
@@ -19,14 +20,17 @@ import java.io.IOException;
 @Controller
 public class BoxerProfileController {
 
+    private final IBoxerProfileDao iBoxerProfileDao;
+
     private final IUserDao iUserDao;
 
     @Autowired
-    public BoxerProfileController(IUserDao iUserDao) {
+    public BoxerProfileController(IUserDao iUserDao, IBoxerProfileDao iBoxerProfileDao) {
         this.iUserDao = iUserDao;
+        this.iBoxerProfileDao = iBoxerProfileDao;
     }
 
-    @RequestMapping(value = "EFD/boxerProfile/updateTraineeProfile?", method = RequestMethod.POST)
+    @RequestMapping(value = "/EFD/boxerProfile/updateTraineeProfile", method = RequestMethod.POST)
     public void UpdateTraineeProfile(HttpServletRequest httpServletRequest,
                                      HttpServletResponse httpServletResponse) {
 
@@ -50,6 +54,9 @@ public class BoxerProfileController {
             resultJson.put("message","Trainee profile successfully updated");
             resultJson.put("user", user.getJSON());
             resultJson.put("boxerProfile", boxerProfile.getJSON());
+
+            iBoxerProfileDao.save(boxerProfile);
+            iUserDao.save(user);
 
             httpServletResponse.setContentType("application/json");
 

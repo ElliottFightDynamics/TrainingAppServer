@@ -2,10 +2,7 @@ package com.efd.model;
 
 import org.json.JSONObject;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by volodymyr on 16.06.17.
@@ -20,6 +17,8 @@ public class Question {
 
     public Question() {
     }
+
+
 
     public Long getId() {
         return id;

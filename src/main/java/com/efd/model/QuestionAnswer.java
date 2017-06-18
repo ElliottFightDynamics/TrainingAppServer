@@ -11,8 +11,8 @@ public class QuestionAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @ManyToOne(optional=false)
+    @JoinColumn(name="id",referencedColumnName="id", insertable=false, updatable=false)
     private Question question;
     private String answerText;
 

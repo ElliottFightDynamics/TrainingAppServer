@@ -5,7 +5,7 @@ package com.efd.core;
  */
 public enum GolveTypeEnum {
 
-    DEFAULT("default");
+    MMA("mma");
 
     private String value;
 
