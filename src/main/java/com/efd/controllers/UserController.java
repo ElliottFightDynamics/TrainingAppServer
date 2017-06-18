@@ -174,7 +174,30 @@ public class UserController {
     @RequestMapping(value = "/recovery/question", method = RequestMethod.POST)
     public void sendPasswordByQuestion(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse) {
+        User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+        Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("questionId")));
+        String questionAnswer = httpServletRequest.getParameter("questionAnswer");
 
+        JSONObject resultJson = new JSONObject();
+        if (user.getQuestion().equals(question) && user.getQuestionAnswer().getAnswerText().equals(questionAnswer)) {
+            String newPwd = secure.generateNewPasswor();
+            user.setPassword(secure.sha256(newPwd));
+
+            iUserDao.save(user);
+
+            resultJson.put("success",true);
+            resultJson.put("sendStatus","New Password is - " + newPwd);
+        } else {
+            resultJson.put("success",false);
+        }
+
+        httpServletResponse.setContentType("application/json");
+
+        try {
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
