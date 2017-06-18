@@ -1,12 +1,11 @@
-package com.efd.rest.controllers;
+package com.efd.controllers;
 
-import com.efd.dao.IQuestion;
+import com.efd.dao.ICountryDao;
 import com.efd.model.Country;
-import com.efd.model.Question;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONPointerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,34 +13,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by volodymyr on 14.06.17.
  */
 @Controller
-public class QuestionController {
+public class CountryController {
 
-    final private IQuestion iQuestion;
+    private final ICountryDao iCountryDao;
 
     @Autowired
-    public QuestionController(IQuestion iQuestion) {
-        this.iQuestion = iQuestion;
+    public CountryController(ICountryDao iCountryDao) {
+        this.iCountryDao = iCountryDao;
     }
 
-    @RequestMapping(value = "/EFD/question/list", method = RequestMethod.POST)
-    public void questionList(HttpServletResponse httpServletResponse) {
+    @RequestMapping(value = "/EFD/country/list", method = RequestMethod.POST)
+    public void countryList(HttpServletResponse httpServletResponse) {
 
         try {
-            List<Question> questions = (List<Question>) iQuestion.findAll();
+            List<Country> countries = (List<Country>) iCountryDao.findAll();
 
             JSONArray objects = new JSONArray();
-            questions.forEach(question -> objects.put(question.getJSON()));
+            countries.forEach(country -> objects.put(country.getJSON()));
             JSONObject resultJson = new JSONObject();
             resultJson.put("success",true);
-            resultJson.put("questionList", objects);
+            resultJson.put("countryList", objects);
             httpServletResponse.setContentType("application/json");
 
             httpServletResponse.getWriter().write(resultJson.toString());

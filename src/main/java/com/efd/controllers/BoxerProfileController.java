@@ -1,4 +1,4 @@
-package com.efd.rest.controllers;
+package com.efd.controllers;
 
 import com.efd.dao.IBoxerProfileDao;
 import com.efd.dao.IUserDao;

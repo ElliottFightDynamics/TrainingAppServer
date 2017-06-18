@@ -1,8 +1,6 @@
 package com.efd.model;
 
-import com.efd.core.GolveTypeEnum;
-import com.efd.core.SkillLavelEnum;
-import com.efd.core.StanceEnum;
+import com.efd.core.Constants;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -180,7 +178,7 @@ public class BoxerProfile {
         object.put("class", this);
         object.put("id", id);
         object.put("chest", chest);
-        object.put("gloveType", (gloveType!=null)?gloveType: GolveTypeEnum.MMA.getValue());
+        object.put("gloveType", (gloveType!=null) ? gloveType : Constants.DEFAULT_GOLVE_TYPE);
         object.put("height", height);
         object.put("inseam", inseam);
         object.put("reach", reach);
@@ -190,8 +188,8 @@ public class BoxerProfile {
         object.put("leftDeviceGeneration", leftDeviceGeneration);
         object.put("rightDeviceSensorName", rightDeviceSensorName);
         object.put("rightDeviceGeneration", rightDeviceGeneration);
-        object.put("skillLevel", (skillLevel!=null)?skillLevel: SkillLavelEnum.NOVICE.getValue());
-        object.put("stance", (stance!=null)?stance: StanceEnum.TRADITIONAL.getValue());
+        object.put("skillLevel", (skillLevel!=null) ? skillLevel : Constants.DEFAULT_SKILL_LAVEL);
+        object.put("stance", (stance!=null) ? stance : Constants.DEFAULT_STANCE);
         object.put("waist", waist);
         object.put("weight", weight);
 
@@ -199,8 +197,6 @@ public class BoxerProfile {
         userJSON.put("class",user);
         userJSON.put("id", user.getId());
         object.put("user", userJSON);
-
-
 
         return object;
     }

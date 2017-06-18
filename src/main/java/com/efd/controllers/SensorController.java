@@ -1,4 +1,4 @@
-package com.efd.rest.controllers;
+package com.efd.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +14,5 @@ public class SensorController {
     public String SensorRegistrationStatus() {
         return null;
     }
-
 
 }
