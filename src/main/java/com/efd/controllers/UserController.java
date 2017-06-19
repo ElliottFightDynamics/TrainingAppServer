@@ -200,4 +200,27 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/checkingParams", method = RequestMethod.POST)
+    public void checkingParams(HttpServletRequest httpServletRequest,
+                               HttpServletResponse httpServletResponse) {
+
+        User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+        int weight = Integer.parseInt(httpServletRequest.getParameter("weight"));
+
+        String gloveType = httpServletRequest.getParameter("gloveType");
+
+
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("success",weight == user.getBoxerProfile().getWeight() &&
+                gloveType.equals(user.getBoxerProfile().getGloveType()));
+
+        httpServletResponse.setContentType("application/json");
+
+        try {
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
