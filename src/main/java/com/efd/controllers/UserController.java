@@ -213,6 +213,8 @@ public class UserController {
         JSONObject resultJson = new JSONObject();
         resultJson.put("success",weight == user.getBoxerProfile().getWeight() &&
                 gloveType.equals(user.getBoxerProfile().getGloveType()));
+        resultJson.put("weight", user.getBoxerProfile().getWeight());
+        resultJson.put("gloveType", user.getBoxerProfile().getGloveType());
 
         httpServletResponse.setContentType("application/json");
 
