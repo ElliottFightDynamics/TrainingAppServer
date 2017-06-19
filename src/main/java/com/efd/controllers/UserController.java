@@ -3,12 +3,16 @@ package com.efd.controllers;
 import com.efd.core.Secure;
 import com.efd.dao.*;
 import com.efd.model.*;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -63,41 +67,44 @@ public class UserController {
     public void userAccountRegistrationStatus(HttpServletRequest httpServletRequest,
                                               HttpServletResponse httpServletResponse) throws NoSuchAlgorithmException {
 
-        User user = new User();
-
-        user.setFirstName(httpServletRequest.getParameter("firstName"));
-        user.setLastName(httpServletRequest.getParameter("lastName"));
-        user.setUserName(httpServletRequest.getParameter("username"));
-        user.setZipCode(Integer.parseInt(httpServletRequest.getParameter("zipcode")));
-        Country country = iCountryDao.findOne(Long.valueOf(httpServletRequest.getParameter("countryId")));
-        user.setCountry(country);
-        user.setDateOfBirthday(null);
-        user.setEmail(httpServletRequest.getParameter("emailId"));
-        user.setSecureToken(secure.generateToken());
-
-        user.setPassword(secure.sha256(httpServletRequest.getParameter("password")));
-        Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("quesId")));
-        user.setQuestion(question);
-        QuestionAnswer questionAnswer = new QuestionAnswer();
-        questionAnswer.setQuestion(question);
-        questionAnswer.setAnswerText(httpServletRequest.getParameter("answer"));
-        user.setQuestionAnswer(questionAnswer);
-
-        BoxerProfile boxerProfile = new BoxerProfile();
-        boxerProfile.setLeftDevice(httpServletRequest.getParameter("leftDevice"));
-        boxerProfile.setRightDevice(httpServletRequest.getParameter("rightDevice"));
-        boxerProfile.setLeftDeviceSensorName(httpServletRequest.getParameter("leftDeviceSensorName"));
-        boxerProfile.setLeftDeviceGeneration(httpServletRequest.getParameter("leftDeviceGeneration"));
-        boxerProfile.setRightDeviceSensorName(httpServletRequest.getParameter("rightDeviceSensorName"));
-        boxerProfile.setRightDeviceGeneration(httpServletRequest.getParameter("rightDeviceGeneration"));
-        user.setBoxerProfile(boxerProfile);
-
-        iQuestionsAnswer.save(questionAnswer);
-        iCountryDao.save(country);
-        iBoxerProfileDao.save(boxerProfile);
-        iUserDao.save(user);
-
         try {
+
+            User user = new User();
+
+            user.setFirstName(httpServletRequest.getParameter("firstName"));
+            user.setLastName(httpServletRequest.getParameter("lastName"));
+            user.setUserName(httpServletRequest.getParameter("username"));
+            user.setZipCode(Integer.parseInt(httpServletRequest.getParameter("zipcode")));
+            Country country = iCountryDao.findOne(Long.valueOf(httpServletRequest.getParameter("countryId")));
+            user.setCountry(country);
+            user.setDateOfBirthday(null);
+            user.setEmail(httpServletRequest.getParameter("emailId"));
+            user.setSecureToken(secure.generateToken());
+
+            user.setPassword(secure.sha256(httpServletRequest.getParameter("password")));
+            Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("quesId")));
+            user.setQuestion(question);
+            QuestionAnswer questionAnswer = new QuestionAnswer();
+            questionAnswer.setQuestion(question);
+            questionAnswer.setAnswerText(httpServletRequest.getParameter("answer"));
+
+            user.setQuestionAnswer(questionAnswer);
+
+            BoxerProfile boxerProfile = new BoxerProfile();
+            boxerProfile.setLeftDevice(httpServletRequest.getParameter("leftDevice"));
+            boxerProfile.setRightDevice(httpServletRequest.getParameter("rightDevice"));
+            boxerProfile.setLeftDeviceSensorName(httpServletRequest.getParameter("leftDeviceSensorName"));
+            boxerProfile.setLeftDeviceGeneration(httpServletRequest.getParameter("leftDeviceGeneration"));
+            boxerProfile.setRightDeviceSensorName(httpServletRequest.getParameter("rightDeviceSensorName"));
+            boxerProfile.setRightDeviceGeneration(httpServletRequest.getParameter("rightDeviceGeneration"));
+            user.setBoxerProfile(boxerProfile);
+
+            iQuestionsAnswer.save(questionAnswer);
+            iCountryDao.save(country);
+            iBoxerProfileDao.save(boxerProfile);
+            iUserDao.save(user);
+
+
             JSONObject resultJson = new JSONObject();
             resultJson.put("success", true);
             resultJson.put("message", "Trainee successfully created");
@@ -155,9 +162,9 @@ public class UserController {
             String newPwd = secure.generateNewPasswor();
             user.setPassword(secure.sha256(newPwd));
 
-            iUserDao.save(user);
-
             boolean status = secure.sendEmail(newPwd, user.getEmail());
+
+            iUserDao.save(user);
 
             JSONObject resultJson = new JSONObject();
             resultJson.put("success",status);
@@ -174,26 +181,27 @@ public class UserController {
     @RequestMapping(value = "/recovery/question", method = RequestMethod.POST)
     public void sendPasswordByQuestion(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse) {
-        User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
-        Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("questionId")));
-        String questionAnswer = httpServletRequest.getParameter("questionAnswer");
-
-        JSONObject resultJson = new JSONObject();
-        if (user.getQuestion().equals(question) && user.getQuestionAnswer().getAnswerText().equals(questionAnswer)) {
-            String newPwd = secure.generateNewPasswor();
-            user.setPassword(secure.sha256(newPwd));
-
-            iUserDao.save(user);
-
-            resultJson.put("success",true);
-            resultJson.put("sendStatus","New Password is - " + newPwd);
-        } else {
-            resultJson.put("success",false);
-        }
-
-        httpServletResponse.setContentType("application/json");
-
         try {
+            User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+            Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("questionId")));
+            String questionAnswer = httpServletRequest.getParameter("questionAnswer");
+
+            JSONObject resultJson = new JSONObject();
+            if (user.getQuestion().equals(question) && user.getQuestionAnswer().getAnswerText().equals(questionAnswer)) {
+                String newPwd = secure.generateNewPasswor();
+                user.setPassword(secure.sha256(newPwd));
+
+                secure.sendEmail(newPwd, user.getEmail());
+
+                iUserDao.save(user);
+
+                resultJson.put("success",true);
+            } else {
+                resultJson.put("success",false);
+            }
+
+            httpServletResponse.setContentType("application/json");
+
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -227,5 +235,4 @@ public class UserController {
             e.printStackTrace();
         }
     }
-
 }
