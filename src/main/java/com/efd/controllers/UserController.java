@@ -200,15 +200,18 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/checkingParams", method = RequestMethod.POST)
-    public void checkingParams(HttpServletRequest httpServletRequest,
+    @RequestMapping(value = "/changeParams", method = RequestMethod.POST)
+    public void changeParams(HttpServletRequest httpServletRequest,
                                HttpServletResponse httpServletResponse) {
 
         User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
         int weight = Integer.parseInt(httpServletRequest.getParameter("weight"));
 
         String gloveType = httpServletRequest.getParameter("gloveType");
-
+        BoxerProfile boxerProfile = user.getBoxerProfile();
+        boxerProfile.setGloveType(gloveType);
+        boxerProfile.setWeight(weight);
+        iBoxerProfileDao.save(boxerProfile);
 
         JSONObject resultJson = new JSONObject();
         resultJson.put("success",weight == user.getBoxerProfile().getWeight() &&
