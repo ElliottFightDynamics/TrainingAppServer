@@ -49,9 +49,13 @@ public class BoxerProfileController {
                 user.setGender((httpServletRequest.getParameter("gender").equals("M")));
                 BoxerProfile boxerProfile = user.getBoxerProfile();
                 if (paramKey.contains("height"))
-                    boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
+                    try {
+                        boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
+                    } catch (Exception ignore) {}
                 if (paramKey.contains("weight"))
-                    boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
+                    try {
+                        boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
+                    } catch (Exception ignore) {}
                 if (paramKey.contains("stance"))
                     boxerProfile.setStance(httpServletRequest.getParameter("stance"));
                 if (paramKey.contains("skillLevel"))
@@ -59,7 +63,9 @@ public class BoxerProfileController {
                 if (paramKey.contains("gloveType"))
                     boxerProfile.setGloveType(httpServletRequest.getParameter("gloveType"));
                 if (paramKey.contains("reach"))
-                    boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
+                    try {
+                        boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
+                    } catch (Exception ignore) {}
 
                 if (paramKey.contains("photo")) {
                     byte[] photo = httpServletRequest.getParameter("photo").getBytes();

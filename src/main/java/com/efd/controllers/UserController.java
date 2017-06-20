@@ -83,7 +83,7 @@ public class UserController {
             if (paramKey.contains("zipcode")) {
                 try {
                     user.setZipCode(Integer.parseInt(httpServletRequest.getParameter("zipcode")));
-                } catch (ClassCastException ignored) {}
+                } catch (Exception ignored) {}
             }
 
             if (paramKey.contains("countryId")) {
@@ -92,7 +92,7 @@ public class UserController {
                     user.setCountry(country);
                     user.setDateOfBirthday(null);
                     iCountryDao.save(country);
-                } catch (ClassCastException ignored) {}
+                } catch (Exception ignored) {}
             }
 
             user.setEmail(httpServletRequest.getParameter("emailId"));
@@ -112,7 +112,7 @@ public class UserController {
                     questionAnswer.setAnswerText(httpServletRequest.getParameter("answer"));
                     user.setQuestionAnswer(questionAnswer);
                     iQuestionsAnswer.save(questionAnswer);
-                } catch (ClassCastException ignored) {}
+                } catch (Exception ignored) {}
             }
 
             BoxerProfile boxerProfile = new BoxerProfile();
