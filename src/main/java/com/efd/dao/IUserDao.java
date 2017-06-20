@@ -11,12 +11,12 @@ import javax.transaction.Transactional;
  */
 @Transactional
 public interface IUserDao extends CrudRepository<User, Long>{
-    User findUserByUserNameAndEmail(String username, String email);
+    User findUserByUserNameOrEmail(String username, String email);
 
     User findUserByEmail(String email);
 
     default boolean auth(String username, String password) {
-        return findUserByUserNameAndEmail(username, username).getPassword().equals(password);
+        return findUserByUserNameOrEmail(username, username).getPassword().equals(password);
     }
 
     default boolean confirmToken(String username, String token) {

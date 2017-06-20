@@ -124,31 +124,33 @@ public class UserController {
     public void traineeLogin(HttpServletRequest httpServletRequest,
                              HttpServletResponse httpServletResponse) {
         try {
+            JSONObject resultJson = new JSONObject();
             String username = httpServletRequest.getParameter("username");
 
             String password = httpServletRequest.getParameter("password");
 
             if (iUserDao.auth(username, password)) {
 
-                User user = iUserDao.findUserByUserNameAndEmail(username, username);
+                User user = iUserDao.findUserByUserNameOrEmail(username, username);
                 BoxerProfile boxerProfile = user.getBoxerProfile();
                 String token = secure.generateToken();
                 user.setSecureToken(token);
                 iUserDao.save(user);
 
-                JSONObject resultJson = new JSONObject();
+
                 resultJson.put("success",true);
                 resultJson.put("message","Login successfully");
                 resultJson.put("secureAccessToken",token);
                 resultJson.put("user", user.getJSON());
                 resultJson.put("boxerProfile", boxerProfile.getJSON());
                 resultJson.put("trainingSummary", "");
-
-                httpServletResponse.setContentType("application/json");
-
-                httpServletResponse.getWriter().write(resultJson.toString());
-
+            } else {
+                resultJson.put("success",false);
             }
+
+            httpServletResponse.setContentType("application/json");
+
+            httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -188,10 +190,8 @@ public class UserController {
 
             JSONObject resultJson = new JSONObject();
             if (user.getQuestion().equals(question) && user.getQuestionAnswer().getAnswerText().equals(questionAnswer)) {
-                String newPwd = secure.generateNewPasswor();
-                user.setPassword(secure.sha256(newPwd));
 
-                secure.sendEmail(newPwd, user.getEmail());
+                user.setPassword("-1");
 
                 iUserDao.save(user);
 
@@ -202,6 +202,32 @@ public class UserController {
 
             httpServletResponse.setContentType("application/json");
 
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
+    public void updatePwd(HttpServletRequest httpServletRequest,
+                             HttpServletResponse httpServletResponse) {
+
+        User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+        String newPwd = httpServletRequest.getParameter("password");
+
+        JSONObject resultJson = new JSONObject();
+        if (user.getPassword().equals("-1")) {
+            user.setPassword(secure.sha256(newPwd));
+
+            iUserDao.save(user);
+
+
+            resultJson.put("success", true);
+        } else {
+            resultJson.put("success", false);
+        }
+        httpServletResponse.setContentType("application/json");
+        try {
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (IOException e) {
             e.printStackTrace();
