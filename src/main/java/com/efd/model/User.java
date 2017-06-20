@@ -1,12 +1,10 @@
 package com.efd.model;
 
 import org.json.JSONObject;
-import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
-import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by volodymyr on 13.06.17.
@@ -47,6 +45,77 @@ public class User {
     private BoxerProfile boxerProfile;
     private int trainingSummary;
     private String secureToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TraineePunchDataPeakSummary> traineePunchDataPeakSummaries;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TraineePunchData> traineePunchData;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TraineeDataDetails> traineeDataDetails;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TraineeData> traineeData;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TraineeSession> traineeSessions;
+
+    public List<TraineeSession> getTraineeSessions() {
+        return (traineeSessions !=null)? traineeSessions :new ArrayList<>();
+    }
+
+    public void setTraineeSessions(List<TraineeSession> traineeSessions) {
+        this.traineeSessions = traineeSessions;
+    }
+
+    public void addSessions(List<TraineeSession> traineeSessions) {
+        this.traineeSessions.addAll(traineeSessions);
+    }
+
+    public List<TraineeData> getTraineeData() {
+        return (traineeData !=null)? traineeData :new ArrayList<>();
+    }
+
+    public void setTraineeData(List<TraineeData> traineeData) {
+        this.traineeData = traineeData;
+    }
+
+    public void addData(List<TraineeData> data) {
+        this.traineeData.addAll(data);
+    }
+
+    public List<TraineeDataDetails> getTraineeDataDetails() {
+        return (traineeDataDetails !=null)? traineeDataDetails :new ArrayList<>();
+    }
+
+    public void setTraineeDataDetails(List<TraineeDataDetails> traineeDataDetails) {
+        this.traineeDataDetails = traineeDataDetails;
+    }
+
+    public void addDataDetails(List<TraineeDataDetails> traineeDataDetails) {
+        this.traineeDataDetails.addAll(traineeDataDetails);
+    }
+
+    public List<TraineePunchData> getTraineePunchData() {
+        return (traineePunchData !=null)? traineePunchData :new ArrayList<>();
+    }
+
+    public void setTraineePunchData(List<TraineePunchData> traineePunchData) {
+        this.traineePunchData = traineePunchData;
+    }
+
+    public void addPunchData(List<TraineePunchData> traineePunchData) {
+        this.traineePunchData.addAll(traineePunchData);
+    }
+
+    public List<TraineePunchDataPeakSummary> getTraineePunchDataPeakSummaries() {
+        return (traineePunchDataPeakSummaries !=null)? traineePunchDataPeakSummaries :new ArrayList<>();
+    }
+
+    public void setTraineePunchDataPeakSummaries(List<TraineePunchDataPeakSummary> traineePunchDataPeakSummaries) {
+        this.traineePunchDataPeakSummaries = traineePunchDataPeakSummaries;
+    }
+
+    public void addPunchDataPeakSummaries(List<TraineePunchDataPeakSummary> punchDataPeakSummaries) {
+        this.traineePunchDataPeakSummaries.addAll(punchDataPeakSummaries);
+    }
 
     public String getSecureToken() {
         return secureToken;

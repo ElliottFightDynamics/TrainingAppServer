@@ -71,39 +71,67 @@ public class UserController {
 
             User user = new User();
 
-            user.setFirstName(httpServletRequest.getParameter("firstName"));
-            user.setLastName(httpServletRequest.getParameter("lastName"));
-            user.setUserName(httpServletRequest.getParameter("username"));
-            user.setZipCode(Integer.parseInt(httpServletRequest.getParameter("zipcode")));
-            Country country = iCountryDao.findOne(Long.valueOf(httpServletRequest.getParameter("countryId")));
-            user.setCountry(country);
-            user.setDateOfBirthday(null);
+            List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
+
+            if (paramKey.contains("firstName"))
+                user.setFirstName(httpServletRequest.getParameter("firstName"));
+            if (paramKey.contains("lastName"))
+                user.setLastName(httpServletRequest.getParameter("lastName"));
+            if (paramKey.contains("username"))
+                user.setUserName(httpServletRequest.getParameter("username"));
+
+            if (paramKey.contains("zipcode")) {
+                try {
+                    user.setZipCode(Integer.parseInt(httpServletRequest.getParameter("zipcode")));
+                } catch (ClassCastException ignored) {}
+            }
+
+            if (paramKey.contains("countryId")) {
+                try {
+                    Country country = iCountryDao.findOne(Long.valueOf(httpServletRequest.getParameter("countryId")));
+                    user.setCountry(country);
+                    user.setDateOfBirthday(null);
+                    iCountryDao.save(country);
+                } catch (ClassCastException ignored) {}
+            }
+
             user.setEmail(httpServletRequest.getParameter("emailId"));
             user.setSecureToken(secure.generateToken());
 
-            user.setPassword(secure.sha256(httpServletRequest.getParameter("password")));
-            Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("quesId")));
-            user.setQuestion(question);
-            QuestionAnswer questionAnswer = new QuestionAnswer();
-            questionAnswer.setQuestion(question);
-            questionAnswer.setAnswerText(httpServletRequest.getParameter("answer"));
+            if (paramKey.contains("password")) {
+                user.setPassword(secure.sha256(httpServletRequest.getParameter("password")));
+            }
 
-            user.setQuestionAnswer(questionAnswer);
+            if (paramKey.contains("quesId")) {
+                try {
+                    Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter("quesId")));
+                    user.setQuestion(question);
+                    QuestionAnswer questionAnswer = new QuestionAnswer();
+                    questionAnswer.setQuestion(question);
+                    if (paramKey.contains("answer"))
+                    questionAnswer.setAnswerText(httpServletRequest.getParameter("answer"));
+                    user.setQuestionAnswer(questionAnswer);
+                    iQuestionsAnswer.save(questionAnswer);
+                } catch (ClassCastException ignored) {}
+            }
 
             BoxerProfile boxerProfile = new BoxerProfile();
-            boxerProfile.setLeftDevice(httpServletRequest.getParameter("leftDevice"));
-            boxerProfile.setRightDevice(httpServletRequest.getParameter("rightDevice"));
-            boxerProfile.setLeftDeviceSensorName(httpServletRequest.getParameter("leftDeviceSensorName"));
-            boxerProfile.setLeftDeviceGeneration(httpServletRequest.getParameter("leftDeviceGeneration"));
-            boxerProfile.setRightDeviceSensorName(httpServletRequest.getParameter("rightDeviceSensorName"));
-            boxerProfile.setRightDeviceGeneration(httpServletRequest.getParameter("rightDeviceGeneration"));
+            if (paramKey.contains("leftDevice"))
+                boxerProfile.setLeftDevice(httpServletRequest.getParameter("leftDevice"));
+            if (paramKey.contains("rightDevice"))
+                boxerProfile.setRightDevice(httpServletRequest.getParameter("rightDevice"));
+            if (paramKey.contains("leftDeviceSensorName"))
+                boxerProfile.setLeftDeviceSensorName(httpServletRequest.getParameter("leftDeviceSensorName"));
+            if (paramKey.contains("leftDeviceGeneration"))
+                boxerProfile.setLeftDeviceGeneration(httpServletRequest.getParameter("leftDeviceGeneration"));
+            if (paramKey.contains("rightDeviceSensorName"))
+                boxerProfile.setRightDeviceSensorName(httpServletRequest.getParameter("rightDeviceSensorName"));
+            if (paramKey.contains("rightDeviceGeneration"))
+                boxerProfile.setRightDeviceGeneration(httpServletRequest.getParameter("rightDeviceGeneration"));
             user.setBoxerProfile(boxerProfile);
 
-            iQuestionsAnswer.save(questionAnswer);
-            iCountryDao.save(country);
             iBoxerProfileDao.save(boxerProfile);
             iUserDao.save(user);
-
 
             JSONObject resultJson = new JSONObject();
             resultJson.put("success", true);
@@ -211,23 +239,22 @@ public class UserController {
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     public void updatePwd(HttpServletRequest httpServletRequest,
                              HttpServletResponse httpServletResponse) {
-
-        User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
-        String newPwd = httpServletRequest.getParameter("password");
-
-        JSONObject resultJson = new JSONObject();
-        if (user.getPassword().equals("-1")) {
-            user.setPassword(secure.sha256(newPwd));
-
-            iUserDao.save(user);
-
-
-            resultJson.put("success", true);
-        } else {
-            resultJson.put("success", false);
-        }
-        httpServletResponse.setContentType("application/json");
         try {
+
+            User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+            String newPwd = httpServletRequest.getParameter("password");
+
+            JSONObject resultJson = new JSONObject();
+            if (user.getPassword().equals("-1")) {
+                user.setPassword(secure.sha256(newPwd));
+
+                iUserDao.save(user);
+
+                resultJson.put("success", true);
+            } else {
+                resultJson.put("success", false);
+            }
+            httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -237,25 +264,31 @@ public class UserController {
     @RequestMapping(value = "/changeParams", method = RequestMethod.POST)
     public void changeParams(HttpServletRequest httpServletRequest,
                                HttpServletResponse httpServletResponse) {
-
-        User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
-        int weight = Integer.parseInt(httpServletRequest.getParameter("weight"));
-
-        String gloveType = httpServletRequest.getParameter("gloveType");
-        BoxerProfile boxerProfile = user.getBoxerProfile();
-        boxerProfile.setGloveType(gloveType);
-        boxerProfile.setWeight(weight);
-        iBoxerProfileDao.save(boxerProfile);
-
-        JSONObject resultJson = new JSONObject();
-        resultJson.put("success",weight == user.getBoxerProfile().getWeight() &&
-                gloveType.equals(user.getBoxerProfile().getGloveType()));
-        resultJson.put("weight", user.getBoxerProfile().getWeight());
-        resultJson.put("gloveType", user.getBoxerProfile().getGloveType());
-
-        httpServletResponse.setContentType("application/json");
-
         try {
+            User user = iUserDao.findUserByEmail(httpServletRequest.getParameter("emailId"));
+            BoxerProfile boxerProfile = user.getBoxerProfile();
+            List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
+            int weight = boxerProfile.getWeight();
+            if (paramKey.contains("weight")) {
+                weight = Integer.parseInt(httpServletRequest.getParameter("weight"));
+                boxerProfile.setWeight(weight);
+            }
+
+            String gloveType = boxerProfile.getGloveType();
+            if (paramKey.contains("gloveType")) {
+                gloveType = httpServletRequest.getParameter("gloveType");
+                boxerProfile.setGloveType(gloveType);
+            }
+
+            iBoxerProfileDao.save(boxerProfile);
+
+            JSONObject resultJson = new JSONObject();
+            resultJson.put("success", weight == user.getBoxerProfile().getWeight() &&
+                    gloveType.equals(user.getBoxerProfile().getGloveType()));
+            resultJson.put("weight", user.getBoxerProfile().getWeight());
+            resultJson.put("gloveType", user.getBoxerProfile().getGloveType());
+
+            httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (IOException e) {
             e.printStackTrace();

@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by volodymyr on 14.06.17.
@@ -40,34 +42,39 @@ public class BoxerProfileController {
         try {
             User user = iUserDao.findOne(Long.valueOf(httpServletRequest.getParameter("userId")));
             String token = httpServletRequest.getParameter("secureAccessToken");
-
+            List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
+            JSONObject resultJson = new JSONObject();
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 user.setDateOfBirthday(httpServletRequest.getParameter("dateOfBirth"));
                 user.setGender((httpServletRequest.getParameter("gender").equals("M")));
                 BoxerProfile boxerProfile = user.getBoxerProfile();
-                boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
-                boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
-                boxerProfile.setStance(httpServletRequest.getParameter("stance"));
-                boxerProfile.setSkillLevel(httpServletRequest.getParameter("skillLevel"));
-                boxerProfile.setGloveType(httpServletRequest.getParameter("gloveType"));
-                boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
+                if (paramKey.contains("height"))
+                    boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
+                if (paramKey.contains("weight"))
+                    boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
+                if (paramKey.contains("stance"))
+                    boxerProfile.setStance(httpServletRequest.getParameter("stance"));
+                if (paramKey.contains("skillLevel"))
+                    boxerProfile.setSkillLevel(httpServletRequest.getParameter("skillLevel"));
+                if (paramKey.contains("gloveType"))
+                    boxerProfile.setGloveType(httpServletRequest.getParameter("gloveType"));
+                if (paramKey.contains("reach"))
+                    boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
 
+                if (paramKey.contains("photo")) {
+                    byte[] photo = httpServletRequest.getParameter("photo").getBytes();
+                    String photoUrl = "photo/" + getFileName() + ".jpg";
+                    FileOutputStream fos = new FileOutputStream(photoUrl);
+                    fos.write(photo);
+                    fos.close();
+                    resultJson.put("photoUrl", photoUrl);
+                }
 
-                byte[] photo = httpServletRequest.getParameter("photo").getBytes();
-
-                String photoUrl = "photo/" + getFileName() + ".jpg";
-
-                FileOutputStream fos = new FileOutputStream(photoUrl);
-                fos.write(photo);
-                fos.close();
-
-                JSONObject resultJson = new JSONObject();
                 resultJson.put("access", true);
                 resultJson.put("success", true);
                 resultJson.put("message", "Trainee profile successfully updated");
                 resultJson.put("user", user.getJSON());
                 resultJson.put("boxerProfile", boxerProfile.getJSON());
-                resultJson.put("photoUrl", photoUrl);
 
                 iBoxerProfileDao.save(boxerProfile);
                 iUserDao.save(user);
