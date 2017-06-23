@@ -4,7 +4,6 @@ import com.efd.core.Constants;
 import org.json.JSONObject;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by volodymyr on 13.06.17.

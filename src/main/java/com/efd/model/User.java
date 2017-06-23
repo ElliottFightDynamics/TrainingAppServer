@@ -1,7 +1,6 @@
 package com.efd.model;
 
 import com.efd.core.Constants;
-import org.apache.tomcat.util.bcel.Const;
 import org.json.JSONObject;
 
 import javax.persistence.*;

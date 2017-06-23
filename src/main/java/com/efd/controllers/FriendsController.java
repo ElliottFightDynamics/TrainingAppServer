@@ -3,7 +3,6 @@ package com.efd.controllers;
 import com.efd.core.Constants;
 import com.efd.core.FCM;
 import com.efd.dao.IUserDao;
-import com.efd.model.TraineePunchDataPeakSummary;
 import com.efd.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,9 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
