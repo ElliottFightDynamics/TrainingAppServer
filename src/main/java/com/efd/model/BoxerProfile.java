@@ -175,28 +175,28 @@ public class BoxerProfile {
     public JSONObject getJSON() {
         JSONObject object = new JSONObject();
 
-        object.put("class", this);
-        object.put("id", id);
-        object.put("chest", chest);
-        object.put("gloveType", (gloveType!=null) ? gloveType : Constants.DEFAULT_GOLVE_TYPE);
-        object.put("height", height);
-        object.put("inseam", inseam);
-        object.put("reach", reach);
-        object.put("leftDevice", leftDevice);
-        object.put("rightDevice", rightDevice);
-        object.put("leftDeviceSensorName", leftDeviceSensorName);
-        object.put("leftDeviceGeneration", leftDeviceGeneration);
-        object.put("rightDeviceSensorName", rightDeviceSensorName);
-        object.put("rightDeviceGeneration", rightDeviceGeneration);
-        object.put("skillLevel", (skillLevel!=null) ? skillLevel : Constants.DEFAULT_SKILL_LEVEL);
-        object.put("stance", (stance!=null) ? stance : Constants.DEFAULT_STANCE);
-        object.put("waist", waist);
-        object.put("weight", weight);
+        object.put(Constants.KEY_CLASS, this);
+        object.put(Constants.KEY_ID, id);
+        object.put(Constants.KEY_CHEST, chest);
+        object.put(Constants.KEY_GLOVE_TYPE, (gloveType!=null) ? gloveType : Constants.DEFAULT_GLOVE_TYPE);
+        object.put(Constants.KEY_HEIGHT, height);
+        object.put(Constants.KEY_INSEAM, inseam);
+        object.put(Constants.KEY_REACH, reach);
+        object.put(Constants.KEY_LEFT_DEVICE, leftDevice);
+        object.put(Constants.KEY_RIGHT_DEVICE, rightDevice);
+        object.put(Constants.KEY_LEFT_DEVICE_SENSOR_NAME, leftDeviceSensorName);
+        object.put(Constants.KEY_LEFT_DEVICE_GENERATION, leftDeviceGeneration);
+        object.put(Constants.KEY_RIGHT_DEVICE_SENSOR_NAME, rightDeviceSensorName);
+        object.put(Constants.KEY_RIGHT_DEVICE_GENERATION, rightDeviceGeneration);
+        object.put(Constants.KEY_SKILL_LEVEL, (skillLevel!=null) ? skillLevel : Constants.DEFAULT_SKILL_LEVEL);
+        object.put(Constants.KEY_STANCE, (stance!=null) ? stance : Constants.DEFAULT_STANCE);
+        object.put(Constants.KEY_WAIST, waist);
+        object.put(Constants.KEY_WEIGHT, weight);
 
         JSONObject userJSON = new JSONObject();
-        userJSON.put("class",user);
-        userJSON.put("id", user.getId());
-        object.put("user", userJSON);
+        userJSON.put(Constants.KEY_CLASS,user);
+        userJSON.put(Constants.KEY_ID, user.getId());
+        object.put(Constants.KEY_USER, userJSON);
 
         return object;
     }

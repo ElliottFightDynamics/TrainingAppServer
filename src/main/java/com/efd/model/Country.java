@@ -1,5 +1,6 @@
 package com.efd.model;
 
+import com.efd.core.Constants;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -36,8 +37,8 @@ public class Country {
 
     public JSONObject getJSON() {
         JSONObject object = new JSONObject();
-        object.put("id", id);
-        object.put("name", name);
+        object.put(Constants.KEY_ID, id);
+        object.put(Constants.KEY_NAME, name);
         return object;
     }
 }

@@ -1,10 +1,14 @@
 package com.efd.model;
 
+import com.efd.core.Constants;
+import org.apache.tomcat.util.bcel.Const;
 import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by volodymyr on 13.06.17.
@@ -56,6 +60,21 @@ public class User {
     private List<TraineeData> traineeData;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TraineeSession> traineeSessions;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<User> friends;
+
+    public Set<User> getFriends() {
+        return (friends!=null)?friends:new HashSet<>();
+    }
+
+    public void setFriends(Set<User> friends) {
+        this.friends = friends;
+    }
+
+    public void addFriends(User friends) {
+        this.friends.add(friends);
+    }
 
     public List<TraineeSession> getTraineeSessions() {
         return (traineeSessions !=null)? traineeSessions :new ArrayList<>();
@@ -283,31 +302,31 @@ public class User {
     public JSONObject getJSON() {
         JSONObject object = new JSONObject();
 
-        object.put("class",this);
-        object.put("id", id);
-        object.put("firstName", firstName);
-        object.put("lastName", lastName);
-        object.put("username", userName);
-        object.put("zipcode", zipCode);
+        object.put(Constants.KEY_CLASS,this);
+        object.put(Constants.KEY_ID, id);
+        object.put(Constants.KEY_FIRST_NAME, firstName);
+        object.put(Constants.KEY_LAST_NAME, lastName);
+        object.put(Constants.KEY_USERNAME, userName);
+        object.put(Constants.KEY_ZIPCODE, zipCode);
 
         JSONObject countryJSON = new JSONObject();
-        countryJSON.put("class",country);
-        countryJSON.put("id", country.getId());
-        object.put("country", countryJSON);
+        countryJSON.put(Constants.KEY_CLASS,country);
+        countryJSON.put(Constants.KEY_ID, country.getId());
+        object.put(Constants.KEY_COUNTRY, countryJSON);
 
-        object.put("emailId", email);
-        object.put("password", password);
-        object.put("question", question);
-        object.put("questionAnswer", questionAnswer);
-        object.put("dateOfBirth", (dateOfBirthday!=null)?dateOfBirthday:JSONObject.NULL);
-        object.put("gender", gender);
-        object.put("photo", (photo!=null)?photo:JSONObject.NULL);
-        object.put("accountExpired", accountExpired);
-        object.put("accountLocked", accountLocked);
-        object.put("enabled", enabled);
-        object.put("passwordExpired", passwordExpired);
-        object.put("boxerProfile", boxerProfile);
-        object.put("trainingSummary", trainingSummary);
+        object.put(Constants.KEY_EMAIL_ID, email);
+        object.put(Constants.KEY_PASSWORD, password);
+        object.put(Constants.KEY_QUESTION, question);
+        object.put(Constants.KEY_QUESTION_ANSWER, questionAnswer);
+        object.put(Constants.KEY_DATE_OF_BIRTHDAY, (dateOfBirthday!=null)?dateOfBirthday:JSONObject.NULL);
+        object.put(Constants.KEY_GENDER, gender);
+        object.put(Constants.KEY_PHOTO, (photo!=null)?photo:JSONObject.NULL);
+        object.put(Constants.KEY_ACCOUNT_EXPIRED, accountExpired);
+        object.put(Constants.KEY_ACCOUNT_LOCKED, accountLocked);
+        object.put(Constants.KEY_ENABLED, enabled);
+        object.put(Constants.KEY_PASSWORD_EXPIRED, passwordExpired);
+        object.put(Constants.KEY_BOXER_PROFILE, boxerProfile);
+        object.put(Constants.KEY_TRAINING_SUMMARY, trainingSummary);
 
         return object;
     }

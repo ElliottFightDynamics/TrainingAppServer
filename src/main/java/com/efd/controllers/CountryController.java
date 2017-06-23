@@ -1,5 +1,6 @@
 package com.efd.controllers;
 
+import com.efd.core.Constants;
 import com.efd.dao.ICountryDao;
 import com.efd.model.Country;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,9 +38,9 @@ public class CountryController {
             JSONArray objects = new JSONArray();
             countries.forEach(country -> objects.put(country.getJSON()));
             JSONObject resultJson = new JSONObject();
-            resultJson.put("success",true);
-            resultJson.put("countryList", objects);
-            httpServletResponse.setContentType("application/json");
+            resultJson.put(Constants.KEY_SUCCESS,true);
+            resultJson.put(Constants.KEY_COUNTRY_LIST, objects);
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (IOException e) {

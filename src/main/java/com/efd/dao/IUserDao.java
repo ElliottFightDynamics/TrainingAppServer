@@ -15,6 +15,10 @@ public interface IUserDao extends CrudRepository<User, Long>{
 
     User findUserByEmail(String email);
 
+    User findUserByFirstName(String email);
+
+    User findUserByLastName(String email);
+
     User findUserByUserName(String userName);
 
     default boolean auth(String username, String password) {
