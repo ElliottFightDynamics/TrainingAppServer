@@ -10,6 +10,8 @@ public class Constants {
     public static String DEFAULT_STANCE = "Traditional- Left foot front";
     public static String FCM_SERVER_KEY = "";
 
+    public static String AUTH_FAIL = "auth fail";
+
     public static String KEY_APPLICATION_JSON = "application/json";
     public static String KEY_SUCCESS = "success";
     public static String KEY_USER_ID = "userId";
@@ -79,6 +81,7 @@ public class Constants {
     public static String KEY_CHEST = "chest";
     public static String KEY_INSEAM = "inseam";
     public static String KEY_WAIST = "waist";
+    public static final String KEY_COMBO = "combo";
 
 }
 
@@ -94,7 +97,7 @@ try {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS, false);
             }
 

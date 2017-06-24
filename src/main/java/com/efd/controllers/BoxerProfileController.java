@@ -85,7 +85,7 @@ public class BoxerProfileController {
                 iUserDao.save(user);
 
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);

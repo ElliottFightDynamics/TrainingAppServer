@@ -63,6 +63,40 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<User> friends;
 
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Combo combo;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Sets sets;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Workout workout;
+
+    public Combo getCombo() {
+        return combo;
+    }
+
+    public void setCombo(Combo combo) {
+        this.combo = combo;
+    }
+
+    public Sets getSets() {
+        return sets;
+    }
+
+    public void setSets(Sets sets) {
+        this.sets = sets;
+    }
+
+    public Workout getWorkout() {
+        return workout;
+    }
+
+    public void setWorkout(Workout workout) {
+        this.workout = workout;
+    }
+
     public Set<User> getFriends() {
         return (friends!=null)?friends:new HashSet<>();
     }

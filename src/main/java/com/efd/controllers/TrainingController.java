@@ -58,7 +58,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -89,7 +89,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -129,7 +129,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -160,7 +160,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -198,7 +198,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -229,7 +229,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -267,7 +267,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -298,7 +298,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -337,7 +337,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -368,7 +368,7 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 

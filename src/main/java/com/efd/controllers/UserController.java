@@ -168,7 +168,7 @@ public class UserController {
                 resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
                 resultJson.put(Constants.KEY_TRAINING_SUMMARY, "");
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -221,7 +221,7 @@ public class UserController {
 
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
@@ -249,7 +249,7 @@ public class UserController {
 
                 resultJson.put(Constants.KEY_SUCCESS, true);
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
@@ -320,11 +320,11 @@ public class UserController {
                     resultJson.put(Constants.KEY_FRIEND, friend.getJSON());
                     resultJson.put(Constants.KEY_SUCCESS, true);
                 } else {
-                    resultJson.put(Constants.KEY_REASON,"auth fail");
+                    resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                     resultJson.put(Constants.KEY_SUCCESS,false);
                 }
             } else {
-                resultJson.put(Constants.KEY_REASON,"auth fail");
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
