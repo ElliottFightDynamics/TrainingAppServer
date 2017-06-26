@@ -36,12 +36,13 @@ public class QuestionController {
             JSONArray objects = new JSONArray();
             questions.forEach(question -> objects.put(question.getJSON()));
             JSONObject resultJson = new JSONObject();
+            resultJson.put(Constants.KEY_ACCESS, true);
             resultJson.put(Constants.KEY_SUCCESS,true);
             resultJson.put(Constants.KEY_QUESTION_LIST, objects);
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,7 +41,10 @@ public class FriendsController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
 
@@ -49,8 +53,10 @@ public class FriendsController {
                 String message = "User " + user.getUserName() + "want add you to friend.";
                 FCM.send_FCM_Notification(friendTokenId,Constants.FCM_SERVER_KEY,message);
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -72,15 +78,18 @@ public class FriendsController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
 
                 boolean accept = Boolean.getBoolean(httpServletRequest.getParameter(Constants.KEY_ACCEPT));
                 if (accept) {
                     User friend = iUserDao.findUserByUserName(httpServletRequest.getParameter(Constants.KEY_FRIEND_ID));
-                    user.addFriends(friend);
-                    friend.addFriends(user);
+                    user.addFriends(friend.getId());
+                    friend.addFriends(user.getId());
                     iUserDao.save(friend);
                     iUserDao.save(user);
                 }
@@ -89,6 +98,7 @@ public class FriendsController {
                 resultJson.put(Constants.KEY_SUCCESS,accept);
 
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -108,16 +118,20 @@ public class FriendsController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
 
-                Set<String> friendsUserNames = new HashSet<>();
-                user.getFriends().forEach(user1 -> friendsUserNames.add(user1.getUserName()));
+                List<Long> friendsUserNames = user.getFriends();
                 Gson gson = new GsonBuilder().create();
                 resultJson.put(Constants.KEY_FRIENDS_USERNAMES,gson.toJson(friendsUserNames));
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }

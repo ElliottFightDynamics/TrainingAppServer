@@ -73,7 +73,7 @@ public class Secure {
 
             Transport.send(message);
             return true;
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             //throw new RuntimeException(e);
             return false;
         }

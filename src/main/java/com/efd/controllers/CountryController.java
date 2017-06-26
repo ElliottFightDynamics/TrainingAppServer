@@ -36,12 +36,13 @@ public class CountryController {
             JSONArray objects = new JSONArray();
             countries.forEach(country -> objects.put(country.getJSON()));
             JSONObject resultJson = new JSONObject();
+            resultJson.put(Constants.KEY_ACCESS, true);
             resultJson.put(Constants.KEY_SUCCESS,true);
             resultJson.put(Constants.KEY_COUNTRY_LIST, objects);
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -53,7 +53,7 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -137,7 +137,7 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -152,24 +152,32 @@ public class UserController {
 
             String password = httpServletRequest.getParameter(Constants.KEY_PASSWORD);
 
-            if (iUserDao.auth(username, password)) {
+            if (iUserDao.findUserByUserNameOrEmail(username, username)!=null) {
+                if (iUserDao.auth(username, password)) {
 
-                User user = iUserDao.findUserByUserNameOrEmail(username, username);
-                BoxerProfile boxerProfile = user.getBoxerProfile();
-                String token = secure.generateToken();
-                user.setSecureToken(token);
-                iUserDao.save(user);
+                    User user = iUserDao.findUserByUserNameOrEmail(username, username);
+                    if (user==null) {
+                        user = iUserDao.findUserByUserNameOrEmailOrId(username, username, Long.valueOf(username));
+                    }
+                    BoxerProfile boxerProfile = user.getBoxerProfile();
+                    String token = secure.generateToken();
+                    user.setSecureToken(token);
+                    iUserDao.save(user);
 
 
-                resultJson.put(Constants.KEY_SUCCESS,true);
-                resultJson.put(Constants.KEY_MESSAGE,"Login successfully");
-                resultJson.put(Constants.KEY_TOKEN,token);
-                resultJson.put(Constants.KEY_USER, user.getJSON());
-                resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
-                resultJson.put(Constants.KEY_TRAINING_SUMMARY, "");
+                    resultJson.put(Constants.KEY_SUCCESS, true);
+                    resultJson.put(Constants.KEY_MESSAGE, "Login successfully");
+                    resultJson.put(Constants.KEY_TOKEN, token);
+                    resultJson.put(Constants.KEY_USER, user.getJSON());
+                    resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
+                    resultJson.put(Constants.KEY_TRAINING_SUMMARY, "");
+                } else {
+                    resultJson.put(Constants.KEY_REASON, Constants.AUTH_FAIL);
+                    resultJson.put(Constants.KEY_SUCCESS, false);
+                }
             } else {
-                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
-                resultJson.put(Constants.KEY_SUCCESS,false);
+                resultJson.put(Constants.KEY_REASON, Constants.WRONG_USERNAME);
+                resultJson.put(Constants.KEY_SUCCESS, false);
             }
 
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
@@ -198,7 +206,7 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -219,8 +227,10 @@ public class UserController {
 
                 iUserDao.save(user);
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -228,7 +238,7 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -249,12 +259,13 @@ public class UserController {
 
                 resultJson.put(Constants.KEY_SUCCESS, true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -288,7 +299,7 @@ public class UserController {
 
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -302,7 +313,11 @@ public class UserController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
                 User friend = null;
@@ -320,18 +335,91 @@ public class UserController {
                     resultJson.put(Constants.KEY_FRIEND, friend.getJSON());
                     resultJson.put(Constants.KEY_SUCCESS, true);
                 } else {
+                    resultJson.put(Constants.KEY_ACCESS, false);
                     resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                     resultJson.put(Constants.KEY_SUCCESS,false);
                 }
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
 
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping(value = "/userInfoUpdate", method = RequestMethod.POST)
+    public void userInfoUpdate(HttpServletRequest httpServletRequest,
+                         HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+                List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
+                BoxerProfile boxerProfile = user.getBoxerProfile();
+
+                if (paramKey.contains("firstName")) {
+                    user.setFirstName(httpServletRequest.getParameter("firstName"));
+                }
+                if (paramKey.contains("lastName")) {
+                    user.setLastName(httpServletRequest.getParameter("lastName"));
+                }
+                if (paramKey.contains("stance")) {
+                    boxerProfile.setStance(httpServletRequest.getParameter("stance"));
+                }
+                if (paramKey.contains("gender")) {
+                    user.setGender((httpServletRequest.getParameter(Constants.KEY_GENDER).equals("M")));
+                }
+                if (paramKey.contains("dateOfBirth")) {
+                    user.setDateOfBirthday(httpServletRequest.getParameter("dateOfBirth"));
+                }
+                if (paramKey.contains("weight")) {
+                    boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
+                }
+                if (paramKey.contains("reach")) {
+                    boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
+                }
+                if (paramKey.contains("skillLevel")) {
+                    boxerProfile.setSkillLevel(httpServletRequest.getParameter("skillLevel"));
+                }
+                if (paramKey.contains("height")) {
+                    boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
+                }
+                if (paramKey.contains("gloveType")) {
+                    boxerProfile.setGloveType(httpServletRequest.getParameter("gloveType"));
+                }
+
+                iBoxerProfileDao.save(boxerProfile);
+                iUserDao.save(user);
+
+                resultJson.put(Constants.KEY_MESSAGE,"Change successfully");
+                resultJson.put(Constants.KEY_USER, user.getJSON());
+                resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
+
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS, false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

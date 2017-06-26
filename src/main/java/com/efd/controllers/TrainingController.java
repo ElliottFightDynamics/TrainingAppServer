@@ -1,7 +1,7 @@
 package com.efd.controllers;
 
 import com.efd.core.Constants;
-import com.efd.dao.IUserDao;
+import com.efd.dao.*;
 import com.efd.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,10 +25,21 @@ import java.util.List;
 public class TrainingController {
 
     private final IUserDao iUserDao;
+    private final IPunchDataPeakSummaryDao iPunchDataPeakSummaryDao;
+    private final IPunchDataDao iPunchDataDao;
+    private final IDataDetailsDao iDataDetailsDao;
+    private final IDataDao iDataDao;
+    private final ISessionDao iSessionDao;
+
 
     @Autowired
-    public TrainingController(IUserDao iUserDao) {
+    public TrainingController(IUserDao iUserDao, IPunchDataPeakSummaryDao iPunchDataPeakSummaryDao, IPunchDataDao iPunchDataDao, IDataDetailsDao iDataDetailsDao, IDataDao iDataDao, ISessionDao iSessionDao) {
         this.iUserDao = iUserDao;
+        this.iPunchDataPeakSummaryDao = iPunchDataPeakSummaryDao;
+        this.iPunchDataDao = iPunchDataDao;
+        this.iDataDetailsDao = iDataDetailsDao;
+        this.iDataDao = iDataDao;
+        this.iSessionDao = iSessionDao;
     }
 
     @RequestMapping(value = "/trainingPunchDataPeakSummary/saveBulkLocalData", method = RequestMethod.POST)
@@ -39,7 +51,10 @@ public class TrainingController {
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
             String trainingPunchDataPeakSummary = httpServletRequest.getParameter(Constants.KEY_TRAINING_PUNCH_DATA_PEAK_SUMMARY);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -48,16 +63,26 @@ public class TrainingController {
                         mapper.getTypeFactory().constructParametricType(List.class, TraineePunchDataPeakSummary.class)
                 );
 
+                List<Integer> ids = new ArrayList<>();
 
-                punchDataPeakSummaries.forEach(traineePunchDataPeakSummary ->
-                        traineePunchDataPeakSummary.setPrimaryId(user.getUserName()+"_"+ traineePunchDataPeakSummary.getId()));
+                User finalUser = user;
+                punchDataPeakSummaries.forEach(traineePunchDataPeakSummary -> {
+                        traineePunchDataPeakSummary.setPrimaryId(finalUser.getUserName()+"_"+ traineePunchDataPeakSummary.getId());
+                        iPunchDataPeakSummaryDao.save(traineePunchDataPeakSummary);
+                        ids.add(traineePunchDataPeakSummary.getId());
+                });
 
                 user.addPunchDataPeakSummaries(punchDataPeakSummaries);
 
                 iUserDao.save(user);
 
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("serverId", gson.toJson(ids));
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -78,7 +103,10 @@ public class TrainingController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<TraineePunchDataPeakSummary> punchDataPeakSummaries = user.getTraineePunchDataPeakSummaries();
@@ -87,8 +115,10 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_TRAINING_PUNCH_DATA_PEAK_SUMMARY, gson.toJson(punchDataPeakSummaries));
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -109,7 +139,11 @@ public class TrainingController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
             String trainingPunchDataPeakSummary = httpServletRequest.getParameter(Constants.KEY_TRAINING_PUNCH_DATA);
-            User user = iUserDao.findUserByUserName(userId);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -118,17 +152,26 @@ public class TrainingController {
                         mapper.getTypeFactory().constructParametricType(List.class, TraineePunchData.class)
                 );
 
+                List<Integer> ids = new ArrayList<>();
 
-
-                traineePunchData.forEach(data ->
-                        data.setPrimaryId(user.getUserName()+"_"+data.getId()));
+                User finalUser = user;
+                traineePunchData.forEach(data -> {
+                        data.setPrimaryId(finalUser.getUserName()+"_"+data.getId());
+                        iPunchDataDao.save(data);
+                        ids.add(data.getId());
+                });
 
                 user.addPunchData(traineePunchData);
 
                 iUserDao.save(user);
 
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("serverId", gson.toJson(ids));
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -149,7 +192,10 @@ public class TrainingController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<TraineePunchData> punchData = user.getTraineePunchData();
@@ -158,8 +204,10 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_TRAINING_PUNCH_DATA, gson.toJson(punchData));
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -181,7 +229,11 @@ public class TrainingController {
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
             String trainingPunchDataPeakSummary = httpServletRequest.getParameter(Constants.KEY_TRAINING_DATA_DETAILS);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 ObjectMapper mapper = new ObjectMapper();
                 List<TraineeDataDetails> traineeDataDetails = mapper.readValue(
@@ -189,15 +241,25 @@ public class TrainingController {
                         mapper.getTypeFactory().constructParametricType(List.class, TraineeDataDetails.class)
                 );
 
+                List<Integer> ids = new ArrayList<>();
 
-                traineeDataDetails.forEach(details ->
-                        details.setPrimaruId(user.getUserName()+"_"+details.getId()));
+                User finalUser = user;
+                traineeDataDetails.forEach(details -> {
+                        details.setPrimaruId(finalUser.getUserName()+"_"+details.getId());
+                        iDataDetailsDao.save(details);
+                        ids.add(details.getId());
+                });
 
                 user.addDataDetails(traineeDataDetails);
                 iUserDao.save(user);
 
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("serverId", gson.toJson(ids));
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -218,7 +280,10 @@ public class TrainingController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<TraineeDataDetails> dataDetails = user.getTraineeDataDetails();
@@ -227,8 +292,10 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_TRAINING_DATA_DETAILS, gson.toJson(dataDetails));
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -250,7 +317,10 @@ public class TrainingController {
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
             String trainingPunchDataPeakSummary = httpServletRequest.getParameter(Constants.KEY_TRAINING_DATA);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -259,14 +329,25 @@ public class TrainingController {
                         mapper.getTypeFactory().constructParametricType(List.class, TraineeData.class)
                 );
 
-                data.forEach(traineeData1 ->
-                        traineeData1.setPrimaryId(user.getUserName()+"_"+ traineeData1.getId()));
+                List<Integer> ids = new ArrayList<>();
+
+                User finalUser = user;
+                data.forEach(traineeData1 -> {
+                        traineeData1.setPrimaryId(finalUser.getUserName()+"_"+ traineeData1.getId());
+                        iDataDao.save(traineeData1);
+                        ids.add(traineeData1.getId());
+                });
 
                 user.addData(data);
                 iUserDao.save(user);
 
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("serverId", gson.toJson(ids));
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -287,7 +368,10 @@ public class TrainingController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<TraineeData> traineeData = user.getTraineeData();
@@ -296,8 +380,10 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_TRAINING_DATA, gson.toJson(traineeData));
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -319,7 +405,10 @@ public class TrainingController {
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
             String trainingPunchDataPeakSummary = httpServletRequest.getParameter(Constants.KEY_TRAINING_SESSION);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -328,15 +417,26 @@ public class TrainingController {
                         mapper.getTypeFactory().constructParametricType(List.class, TraineeSession.class)
                 );
 
+                List<Integer> ids = new ArrayList<>();
 
-                traineeSessions.forEach(traineeSession ->
-                        traineeSession.setPrimaryId(user.getUserName()+"_"+ traineeSession.getId()));
+                User finalUser = user;
+                traineeSessions.forEach(traineeSession -> {
+                    traineeSession.setPrimaryId(finalUser.getUserName() + "_" + traineeSession.getId());
+                    iSessionDao.save(traineeSession);
+                    ids.add(traineeSession.getId());
+                });
 
                 user.addSessions(traineeSessions);
+
                 iUserDao.save(user);
 
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("serverId", gson.toJson(ids));
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -357,7 +457,10 @@ public class TrainingController {
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
 
-            User user = iUserDao.findUserByUserName(userId);
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
 
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<TraineeSession> traineeSessions = user.getTraineeSessions();
@@ -366,8 +469,10 @@ public class TrainingController {
 
                 resultJson.put(Constants.KEY_TRAINING_SESSION, gson.toJson(traineeSessions));
 
+                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }

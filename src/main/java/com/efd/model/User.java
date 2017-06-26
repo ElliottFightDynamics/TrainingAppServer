@@ -60,53 +60,33 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TraineeSession> traineeSessions;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<User> friends;
+    @ElementCollection
+    private List<Long> friends;
 
     @OneToOne
     @JoinColumn(name = "id")
-    private Combo combo;
-    @OneToOne
-    @JoinColumn(name = "id")
-    private Sets sets;
-    @OneToOne
-    @JoinColumn(name = "id")
-    private Workout workout;
+    private ComboSetsWorkout comboSetsWorkout;
 
-    public Combo getCombo() {
-        return combo;
+    public ComboSetsWorkout getComboSetsWorkout() {
+        return (comboSetsWorkout!=null)?comboSetsWorkout:new ComboSetsWorkout();
     }
 
-    public void setCombo(Combo combo) {
-        this.combo = combo;
+    public void setComboSetsWorkout(ComboSetsWorkout comboSetsWorkout) {
+        this.comboSetsWorkout = comboSetsWorkout;
     }
 
-    public Sets getSets() {
-        return sets;
+    public List<Long> getFriends() {
+        return (friends!=null)?friends:new ArrayList<>();
     }
 
-    public void setSets(Sets sets) {
-        this.sets = sets;
-    }
-
-    public Workout getWorkout() {
-        return workout;
-    }
-
-    public void setWorkout(Workout workout) {
-        this.workout = workout;
-    }
-
-    public Set<User> getFriends() {
-        return (friends!=null)?friends:new HashSet<>();
-    }
-
-    public void setFriends(Set<User> friends) {
+    public void setFriends(List<Long> friends) {
         this.friends = friends;
     }
 
-    public void addFriends(User friends) {
-        this.friends.add(friends);
+    public void addFriends(Long friends) {
+        if (!this.friends.contains(friends)) {
+            this.friends.add(friends);
+        }
     }
 
     public List<TraineeSession> getTraineeSessions() {
