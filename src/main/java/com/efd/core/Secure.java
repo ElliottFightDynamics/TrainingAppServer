@@ -84,7 +84,7 @@ public class Secure {
     public void throwException(String message, HttpServletResponse httpServletResponse) {
         JSONObject resultJson = new JSONObject();
         try {
-            resultJson.put("exception",new JSONObject(message));
+            resultJson.put("exception",message);
             resultJson.put(Constants.KEY_SUCCESS,false);
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
