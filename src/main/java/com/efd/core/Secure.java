@@ -17,33 +17,28 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Secure {
 
-    public String generateToken() {
+    public String generateToken() throws Exception {
         SecureRandom random = new SecureRandom();
         byte bytes[] = new byte[20];
         random.nextBytes(bytes);
         return Arrays.toString(bytes);
     }
 
-    public String sha256(String base) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(base.getBytes("UTF-8"));
-            StringBuffer hexString = new StringBuffer();
+    public String sha256(String base) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(base.getBytes("UTF-8"));
+        StringBuffer hexString = new StringBuffer();
 
-            for (int i = 0; i < hash.length; i++) {
-                String hex = Integer.toHexString(0xff & hash[i]);
-                if (hex.length() == 1)
-                    hexString.append('0');
-                hexString.append(hex);
-            }
-
-            return hexString.toString();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if (hex.length() == 1)
+                hexString.append('0');
+            hexString.append(hex);
         }
+        return hexString.toString();
     }
 
-    public boolean sendEmail(String newPassword, String email) throws IOException {
+    public boolean sendEmail(String newPassword, String email) throws Exception {
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.socketFactory.port", "465");
@@ -76,13 +71,12 @@ public class Secure {
             Transport.send(message);
             return true;
         } catch (Exception e) {
-            //throw new RuntimeException(e);
             return false;
         }
 
     }
 
-    public String generateNewPasswor() {
+    public String generateNewPassword() throws Exception {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
         return RandomStringUtils.random( 8, characters );
     }
@@ -90,12 +84,12 @@ public class Secure {
     public void throwException(String message, HttpServletResponse httpServletResponse) {
         JSONObject resultJson = new JSONObject();
         try {
-            resultJson.put("Exception",message);
+            resultJson.put("exception",new JSONObject(message));
             resultJson.put(Constants.KEY_SUCCESS,false);
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

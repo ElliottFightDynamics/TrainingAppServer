@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
@@ -197,7 +196,7 @@ public class UserController {
                              HttpServletResponse httpServletResponse) {
         try {
             User user = iUserDao.findUserByEmail(httpServletRequest.getParameter(Constants.KEY_EMAIL_ID));
-            String newPwd = secure.generateNewPasswor();
+            String newPwd = secure.generateNewPassword();
             user.setPassword(secure.sha256(newPwd));
 
             boolean status = secure.sendEmail(newPwd, user.getEmail());
