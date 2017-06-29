@@ -2,6 +2,7 @@ package com.efd.controllers;
 
 import com.efd.core.Constants;
 import com.efd.core.FCM;
+import com.efd.core.Secure;
 import com.efd.dao.IUserDao;
 import com.efd.model.User;
 import com.google.gson.Gson;
@@ -64,6 +65,8 @@ public class FriendsController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -71,7 +74,6 @@ public class FriendsController {
     @RequestMapping(value = "request/reply", method = RequestMethod.POST)
     public void acceptRequest(HttpServletRequest httpServletRequest,
                             HttpServletResponse httpServletResponse) {
-
 
         try {
             JSONObject resultJson = new JSONObject();
@@ -106,6 +108,8 @@ public class FriendsController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -139,6 +143,8 @@ public class FriendsController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }

@@ -83,6 +83,7 @@ public class Constants {
     public static final String KEY_INSEAM = "inseam";
     public static final String KEY_WAIST = "waist";
     public static final String KEY_COMBO = "combo";
+    public static final String KEY_SERVER_ID = "serverId";
 
 }
 

@@ -34,7 +34,7 @@ public class Country {
         this.name = name;
     }
 
-    public JSONObject getJSON() {
+    public JSONObject getJSON() throws Exception {
         JSONObject object = new JSONObject();
         object.put(Constants.KEY_ID, id);
         object.put(Constants.KEY_NAME, name);

@@ -1,6 +1,7 @@
 package com.efd.controllers;
 
 import com.efd.core.Constants;
+import com.efd.core.Secure;
 import com.efd.dao.IBoxerProfileDao;
 import com.efd.dao.IUserDao;
 import com.efd.model.BoxerProfile;
@@ -93,11 +94,13 @@ public class BoxerProfileController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
-                e.printStackTrace();
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            e.printStackTrace();
         }
     }
 
-    private synchronized String getFileName() {
+    private synchronized String getFileName() throws Exception {
         return String.valueOf(System.currentTimeMillis());
     }
 }

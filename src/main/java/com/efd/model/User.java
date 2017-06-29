@@ -312,7 +312,7 @@ public class User {
         this.questionAnswer = questionAnswer;
     }
 
-    public JSONObject getJSON() {
+    public JSONObject getJSON() throws Exception {
         JSONObject object = new JSONObject();
 
         object.put(Constants.KEY_CLASS,this);

@@ -37,7 +37,7 @@ public class Question {
         this.questionText = questionText;
     }
 
-    public JSONObject getJSON() {
+    public JSONObject getJSON() throws Exception {
         JSONObject object = new JSONObject();
         object.put(Constants.KEY_ID, id);
         object.put(Constants.KEY_QUESTION_TEXT, questionText);

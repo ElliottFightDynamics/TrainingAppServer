@@ -1,6 +1,7 @@
 package com.efd.core;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +10,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by volodymyr on 17.06.17.
@@ -83,6 +85,18 @@ public class Secure {
     public String generateNewPasswor() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
         return RandomStringUtils.random( 8, characters );
+    }
+
+    public void throwException(String message, HttpServletResponse httpServletResponse) {
+        JSONObject resultJson = new JSONObject();
+        try {
+            resultJson.put("Exception",message);
+            resultJson.put(Constants.KEY_SUCCESS,false);
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 
 }

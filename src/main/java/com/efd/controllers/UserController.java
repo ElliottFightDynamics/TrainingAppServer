@@ -54,6 +54,8 @@ public class UserController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -65,9 +67,7 @@ public class UserController {
         try {
 
             User user = new User();
-
             List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
-
             if (paramKey.contains(Constants.KEY_FIRST_NAME))
                 user.setFirstName(httpServletRequest.getParameter(Constants.KEY_FIRST_NAME));
             if (paramKey.contains(Constants.KEY_LAST_NAME))
@@ -138,6 +138,8 @@ public class UserController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -184,6 +186,8 @@ public class UserController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -207,6 +211,8 @@ public class UserController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
 
@@ -239,6 +245,8 @@ public class UserController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -266,6 +274,8 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -300,6 +310,8 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -348,6 +360,8 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -418,6 +432,8 @@ public class UserController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }

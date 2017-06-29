@@ -1,6 +1,7 @@
 package com.efd.controllers;
 
 import com.efd.core.Constants;
+import com.efd.core.Secure;
 import com.efd.dao.IQuestion;
 import com.efd.model.Question;
 import org.json.JSONArray;
@@ -34,7 +35,15 @@ public class QuestionController {
             List<Question> questions = (List<Question>) iQuestion.findAll();
 
             JSONArray objects = new JSONArray();
-            questions.forEach(question -> objects.put(question.getJSON()));
+            questions.forEach(question -> {
+                try {
+                    objects.put(question.getJSON());
+                } catch (Exception e) {
+                    Secure secure = new Secure();
+                    secure.throwException(e.getMessage(), httpServletResponse);
+                    e.printStackTrace();
+                }
+            });
             JSONObject resultJson = new JSONObject();
             resultJson.put(Constants.KEY_ACCESS, true);
             resultJson.put(Constants.KEY_SUCCESS,true);
@@ -43,6 +52,8 @@ public class QuestionController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }

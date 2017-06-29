@@ -1,6 +1,7 @@
 package com.efd.controllers;
 
 import com.efd.core.Constants;
+import com.efd.core.Secure;
 import com.efd.dao.IComboSetsWorkoutDao;
 import com.efd.dao.IUserDao;
 import com.efd.model.ComboSetsWorkout;
@@ -52,6 +53,8 @@ public class ComboSetsWorkoutController {
 
                 iComboSetsWorkoutDao.save(comboSetsWorkout);
                 iUserDao.save(user);
+                resultJson.put("sets", (comboSetsWorkout.getSets()!=null)
+                        ?comboSetsWorkout.getSets():"");
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -63,6 +66,8 @@ public class ComboSetsWorkoutController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -88,6 +93,8 @@ public class ComboSetsWorkoutController {
 
                 iComboSetsWorkoutDao.save(comboSetsWorkout);
                 iUserDao.save(user);
+                resultJson.put("combo", (comboSetsWorkout.getCombo()!=null)
+                        ?comboSetsWorkout.getCombo():"");
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -99,12 +106,14 @@ public class ComboSetsWorkoutController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
 
     @RequestMapping(value = "/workout/save", method = RequestMethod.POST)
-    public void save(HttpServletRequest httpServletRequest,
+    public void saveWorkout(HttpServletRequest httpServletRequest,
                      HttpServletResponse httpServletResponse) {
         try {
             JSONObject resultJson = new JSONObject();
@@ -124,6 +133,8 @@ public class ComboSetsWorkoutController {
 
                 iComboSetsWorkoutDao.save(comboSetsWorkout);
                 iUserDao.save(user);
+                resultJson.put("workout", (comboSetsWorkout.getWorkout()!=null)
+                        ?comboSetsWorkout.getWorkout():"");
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -135,6 +146,48 @@ public class ComboSetsWorkoutController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/preset/save", method = RequestMethod.POST)
+    public void savePreset(HttpServletRequest httpServletRequest,
+                     HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+                ComboSetsWorkout comboSetsWorkout = user.getComboSetsWorkout();
+
+                comboSetsWorkout.setPreset(httpServletRequest.getParameter("preset"));
+                user.setComboSetsWorkout(comboSetsWorkout);
+
+                iComboSetsWorkoutDao.save(comboSetsWorkout);
+                iUserDao.save(user);
+                resultJson.put("preset", (comboSetsWorkout.getPreset()!=null)
+                        ?comboSetsWorkout.getPreset():"");
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS, false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
@@ -161,6 +214,8 @@ public class ComboSetsWorkoutController {
                         ?comboSetsWorkout.getSets():"");
                 resultJson.put("combo", (comboSetsWorkout.getCombo()!=null)
                         ?comboSetsWorkout.getCombo():"");
+                resultJson.put("preset", (comboSetsWorkout.getPreset()!=null)
+                        ?comboSetsWorkout.getPreset():"");
 
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
@@ -173,6 +228,8 @@ public class ComboSetsWorkoutController {
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }

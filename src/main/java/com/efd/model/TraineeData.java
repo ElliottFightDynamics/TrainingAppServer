@@ -9,14 +9,16 @@ import javax.persistence.*;
 public class TraineeData {
 
     @Id
-    private String primaryId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long serverID;
     private Integer id;
     private Integer isLeftHand;
     private Integer sessionID;
     private Integer userID;
     private Integer sync;
     private String syncDate;
-    private Long serverID;
+    private String sessionTimestamp;
+    private String timestamp;
     @ManyToOne
     @JoinColumn(name="traineeData",referencedColumnName="id", insertable=false, updatable=false)
     private User user;
@@ -32,12 +34,28 @@ public class TraineeData {
     public TraineeData() {
     }
 
-    public String getPrimaryId() {
-        return primaryId;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setPrimaryId(String primaryId) {
-        this.primaryId = primaryId;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getSessionTimestamp() {
+        return sessionTimestamp;
+    }
+
+    public void setSessionTimestamp(String sessionTimestamp) {
+        this.sessionTimestamp = sessionTimestamp;
+    }
+
+    public String getTimestampe() {
+        return timestamp;
+    }
+
+    public void setTimestampe(String timestampe) {
+        this.timestamp = timestampe;
     }
 
     public Integer getId() {

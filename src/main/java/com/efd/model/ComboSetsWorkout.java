@@ -17,6 +17,7 @@ public class ComboSetsWorkout {
     private String combo;
     private String sets;
     private String workout;
+    private String preset;
 
     public ComboSetsWorkout() {
     }
@@ -51,5 +52,13 @@ public class ComboSetsWorkout {
 
     public void setWorkout(String workout) {
         this.workout = workout;
+    }
+
+    public String getPreset() {
+        return preset;
+    }
+
+    public void setPreset(String preset) {
+        this.preset = preset;
     }
 }

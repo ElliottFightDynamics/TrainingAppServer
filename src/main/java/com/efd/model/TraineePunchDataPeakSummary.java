@@ -1,9 +1,6 @@
 package com.efd.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Created by volodymyr on 20.06.17.
@@ -12,7 +9,8 @@ import javax.persistence.ManyToOne;
 public class TraineePunchDataPeakSummary {
 
     @Id
-    private String primaryId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long serverID;
     private Integer id;
     private Integer hook;
     private Integer jab;
@@ -23,7 +21,7 @@ public class TraineePunchDataPeakSummary {
     private Integer uppercut;
     private Integer sync;
     private String syncDate;
-    private Long serverID;
+    private String dataTimestamp;
     @ManyToOne
     @JoinColumn(name="traineePunchDataPeakSummaries",referencedColumnName="id", insertable=false, updatable=false)
     private User user;
@@ -39,16 +37,16 @@ public class TraineePunchDataPeakSummary {
     public TraineePunchDataPeakSummary() {
     }
 
-    public String getPrimaryId() {
-        return primaryId;
-    }
-
-    public void setPrimaryId(String primaryId) {
-        this.primaryId = primaryId;
-    }
-
     public Integer getId() {
         return id;
+    }
+
+    public String getDataTimestamp() {
+        return dataTimestamp;
+    }
+
+    public void setDataTimestamp(String dataTimestamp) {
+        this.dataTimestamp = dataTimestamp;
     }
 
     public void setId(Integer id) {

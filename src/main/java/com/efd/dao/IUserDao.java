@@ -12,17 +12,13 @@ import javax.transaction.Transactional;
 public interface IUserDao extends CrudRepository<User, Long>{
     User findUserByUserNameOrEmailOrId(String username, String email, Long id);
 
-    User findUserByUserNameOrEmail(String username, String email);
+    User findUserByUserNameOrEmail(String username, String email) throws Exception;
+    User findUserByEmail(String email) throws Exception;
+    User findUserByFirstName(String email) throws Exception;
+    User findUserByLastName(String email) throws Exception;
+    User findUserByUserName(String userName) throws Exception;
 
-    User findUserByEmail(String email);
-
-    User findUserByFirstName(String email);
-
-    User findUserByLastName(String email);
-
-    User findUserByUserName(String userName);
-
-    default boolean auth(String username, String password) {
+    default boolean auth(String username, String password) throws Exception {
 
         try {
             return findUserByUserNameOrEmailOrId(username, username, Long.valueOf(username)).getPassword().equals(password);
@@ -31,7 +27,7 @@ public interface IUserDao extends CrudRepository<User, Long>{
         }
     }
 
-    default boolean confirmToken(String username, String token) {
+    default boolean confirmToken(String username, String token) throws Exception {
         try {
             return findUserByUserNameOrEmailOrId(username, username, Long.valueOf(username)).getSecureToken().equals(token);
         } catch (Exception e) {

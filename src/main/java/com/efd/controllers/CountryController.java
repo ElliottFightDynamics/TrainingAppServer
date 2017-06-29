@@ -1,6 +1,7 @@
 package com.efd.controllers;
 
 import com.efd.core.Constants;
+import com.efd.core.Secure;
 import com.efd.dao.ICountryDao;
 import com.efd.model.Country;
 import org.json.JSONArray;
@@ -34,7 +35,15 @@ public class CountryController {
             List<Country> countries = (List<Country>) iCountryDao.findAll();
 
             JSONArray objects = new JSONArray();
-            countries.forEach(country -> objects.put(country.getJSON()));
+            countries.forEach(country -> {
+                try {
+                    objects.put(country.getJSON());
+                } catch (Exception e) {
+                    Secure secure = new Secure();
+                    secure.throwException(e.getMessage(), httpServletResponse);
+                    e.printStackTrace();
+                }
+            });
             JSONObject resultJson = new JSONObject();
             resultJson.put(Constants.KEY_ACCESS, true);
             resultJson.put(Constants.KEY_SUCCESS,true);
@@ -43,6 +52,8 @@ public class CountryController {
 
             httpServletResponse.getWriter().write(resultJson.toString());
         } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
             e.printStackTrace();
         }
     }
