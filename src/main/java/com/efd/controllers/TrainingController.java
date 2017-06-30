@@ -9,6 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +27,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/EFD")
 public class TrainingController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TrainingController.class);
 
     private final IUserDao iUserDao;
     private final IPunchDataPeakSummaryDao iPunchDataPeakSummaryDao;
@@ -89,6 +93,8 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
+                            logger.error(e.getMessage());
+                            logger.error(e.getCause().getMessage());
                             e.printStackTrace();
                         }
                     traineePunchDataPeakSummary = iPunchDataPeakSummaryDao.save(traineePunchDataPeakSummary);
@@ -116,6 +122,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -150,6 +158,8 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
+                            logger.error(e.getMessage());
+                            logger.error(e.getCause().getMessage());
                             e.printStackTrace();
                         }
                     data = iPunchDataDao.save(data);
@@ -177,6 +187,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -211,6 +223,8 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
+                            logger.error(e.getMessage());
+                            logger.error(e.getCause().getMessage());
                             e.printStackTrace();
                         }
                     details = iDataDetailsDao.save(details);
@@ -237,6 +251,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -271,6 +287,8 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
+                            logger.error(e.getMessage());
+                            logger.error(e.getCause().getMessage());
                             e.printStackTrace();
                         }
                     traineeData1 = iDataDao.save(traineeData1);
@@ -297,6 +315,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -331,6 +351,8 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
+                            logger.error(e.getMessage());
+                            logger.error(e.getCause().getMessage());
                             e.printStackTrace();
                         }
                     traineeSession = iSessionDao.save(traineeSession);
@@ -358,6 +380,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -416,6 +440,8 @@ public class TrainingController {
                                 } catch (Exception e) {
                                     Secure secure = new Secure();
                                     secure.throwException(e.getMessage(), httpServletResponse);
+                                    logger.error(e.getMessage());
+                                    logger.error(e.getCause().getMessage());
                                     e.printStackTrace();
                                 }
                                 trainingDatas.add(trainingData);
@@ -450,6 +476,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }

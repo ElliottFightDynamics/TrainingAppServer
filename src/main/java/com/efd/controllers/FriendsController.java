@@ -8,6 +8,8 @@ import com.efd.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by volodymyr on 21.06.17.
@@ -25,6 +25,8 @@ import java.util.Set;
 @RestController
 @RequestMapping("/EFD/friends")
 public class FriendsController {
+
+    private static final Logger logger = LoggerFactory.getLogger(FriendsController.class);
 
     private final IUserDao iUserDao;
 
@@ -67,6 +69,8 @@ public class FriendsController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -110,6 +114,8 @@ public class FriendsController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -145,6 +151,8 @@ public class FriendsController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }

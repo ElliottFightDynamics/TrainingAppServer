@@ -5,6 +5,8 @@ import com.efd.core.Secure;
 import com.efd.dao.*;
 import com.efd.model.*;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/EFD/user")
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final IBoxerProfileDao iBoxerProfileDao;
 
@@ -55,6 +59,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -139,6 +145,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -187,6 +195,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -212,6 +222,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
 
@@ -246,6 +258,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -275,6 +289,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -311,6 +327,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -361,6 +379,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -433,6 +453,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }

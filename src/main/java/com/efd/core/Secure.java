@@ -2,6 +2,8 @@ package com.efd.core;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
  * Created by volodymyr on 17.06.17.
  */
 public class Secure {
+
+    private static final Logger logger = LoggerFactory.getLogger(Secure.class);
 
     public String generateToken() throws Exception {
         SecureRandom random = new SecureRandom();
@@ -71,6 +75,8 @@ public class Secure {
             Transport.send(message);
             return true;
         } catch (Exception e) {
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             return false;
         }
 

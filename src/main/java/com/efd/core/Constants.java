@@ -86,31 +86,3 @@ public class Constants {
     public static final String KEY_SERVER_ID = "serverId";
 
 }
-
-/*
-try {
-            JSONObject resultJson = new JSONObject();
-            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
-            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
-
-            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
-            if (user==null) {
-                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
-            }
-
-            if (iUserDao.confirmToken(user.getUserName(), token)) {
-
-resultJson.put(Constants.KEY_ACCESS, true);
-                resultJson.put(Constants.KEY_SUCCESS,true);
-            } else {
-                resultJson.put(Constants.KEY_ACCESS, false);
-                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
-                resultJson.put(Constants.KEY_SUCCESS, false);
-            }
-
-            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
-            httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
- */

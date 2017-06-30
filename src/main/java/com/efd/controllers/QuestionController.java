@@ -6,13 +6,14 @@ import com.efd.dao.IQuestion;
 import com.efd.model.Question;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -20,6 +21,8 @@ import java.util.List;
  */
 @Controller
 public class QuestionController {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuestionController.class);
 
     final private IQuestion iQuestion;
 
@@ -41,6 +44,8 @@ public class QuestionController {
                 } catch (Exception e) {
                     Secure secure = new Secure();
                     secure.throwException(e.getMessage(), httpServletResponse);
+                    logger.error(e.getMessage());
+                    logger.error(e.getCause().getMessage());
                     e.printStackTrace();
                 }
             });
@@ -54,6 +59,8 @@ public class QuestionController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }

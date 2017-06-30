@@ -7,6 +7,8 @@ import com.efd.dao.IUserDao;
 import com.efd.model.ComboSetsWorkout;
 import com.efd.model.User;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/EFD")
 public class ComboSetsWorkoutController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ComboSetsWorkoutController.class);
 
     private final IComboSetsWorkoutDao iComboSetsWorkoutDao;
 
@@ -68,6 +72,8 @@ public class ComboSetsWorkoutController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -108,6 +114,8 @@ public class ComboSetsWorkoutController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -148,6 +156,8 @@ public class ComboSetsWorkoutController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -188,6 +198,8 @@ public class ComboSetsWorkoutController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -230,6 +242,8 @@ public class ComboSetsWorkoutController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
