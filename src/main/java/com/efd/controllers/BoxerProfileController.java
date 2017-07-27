@@ -3,8 +3,10 @@ package com.efd.controllers;
 import com.efd.core.Constants;
 import com.efd.core.Secure;
 import com.efd.dao.IBoxerProfileDao;
+import com.efd.dao.ICountryDao;
 import com.efd.dao.IUserDao;
 import com.efd.model.BoxerProfile;
+import com.efd.model.Country;
 import com.efd.model.User;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,10 +34,13 @@ public class BoxerProfileController {
 
     private final IUserDao iUserDao;
 
+    private final ICountryDao iCountryDao;
+
     @Autowired
-    public BoxerProfileController(IUserDao iUserDao, IBoxerProfileDao iBoxerProfileDao) {
+    public BoxerProfileController(IUserDao iUserDao, IBoxerProfileDao iBoxerProfileDao, ICountryDao iCountryDao) {
         this.iUserDao = iUserDao;
         this.iBoxerProfileDao = iBoxerProfileDao;
+        this.iCountryDao = iCountryDao;
     }
 
     @RequestMapping(value = "/EFD/boxerProfile/updateTraineeProfile", method = RequestMethod.POST)
@@ -44,6 +49,7 @@ public class BoxerProfileController {
 
         try {
             User user = iUserDao.findOne(Long.valueOf(httpServletRequest.getParameter(Constants.KEY_USER_ID)));
+            Country country = iCountryDao.findOne(user.getCountryId());
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
             List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
             JSONObject resultJson = new JSONObject();
@@ -82,8 +88,8 @@ public class BoxerProfileController {
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS, true);
                 resultJson.put(Constants.KEY_MESSAGE, "Trainee profile successfully updated");
-                resultJson.put(Constants.KEY_USER, user.getJSON());
-                resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
+                resultJson.put(Constants.KEY_USER, user.getJSON(country));
+                resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON(user));
 
                 iBoxerProfileDao.save(boxerProfile);
                 iUserDao.save(user);
@@ -99,8 +105,8 @@ public class BoxerProfileController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }

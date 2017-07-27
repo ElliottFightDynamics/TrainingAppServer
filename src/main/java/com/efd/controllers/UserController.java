@@ -59,8 +59,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -73,23 +73,23 @@ public class UserController {
 
             User user = new User();
             List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
-            if (paramKey.contains(Constants.KEY_FIRST_NAME))
+            if (paramKey.contains(Constants.KEY_FIRST_NAME) && httpServletRequest.getParameter(Constants.KEY_FIRST_NAME)!=null)
                 user.setFirstName(httpServletRequest.getParameter(Constants.KEY_FIRST_NAME));
-            if (paramKey.contains(Constants.KEY_LAST_NAME))
+            if (paramKey.contains(Constants.KEY_LAST_NAME) && httpServletRequest.getParameter(Constants.KEY_LAST_NAME)!=null)
                 user.setLastName(httpServletRequest.getParameter(Constants.KEY_LAST_NAME));
-            if (paramKey.contains(Constants.KEY_USERNAME))
+            if (paramKey.contains(Constants.KEY_USERNAME)&& httpServletRequest.getParameter(Constants.KEY_USERNAME)!=null)
                 user.setUserName(httpServletRequest.getParameter(Constants.KEY_USERNAME));
 
-            if (paramKey.contains(Constants.KEY_ZIPCODE)) {
+            if (paramKey.contains(Constants.KEY_ZIPCODE)&& httpServletRequest.getParameter(Constants.KEY_ZIPCODE)!=null) {
                 try {
                     user.setZipCode(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_ZIPCODE)));
                 } catch (Exception ignored) {}
             }
 
-            if (paramKey.contains(Constants.KEY_COUNTRY_ID)) {
+            if (paramKey.contains(Constants.KEY_COUNTRY_ID)&& httpServletRequest.getParameter(Constants.KEY_COUNTRY_ID)!=null) {
                 try {
                     Country country = iCountryDao.findOne(Long.valueOf(httpServletRequest.getParameter(Constants.KEY_COUNTRY_ID)));
-                    user.setCountry(country);
+                    user.setCountryId(country.getId());
                     user.setDateOfBirthday(null);
                     iCountryDao.save(country);
                 } catch (Exception ignored) {}
@@ -102,7 +102,7 @@ public class UserController {
                 user.setPassword(secure.sha256(httpServletRequest.getParameter(Constants.KEY_PASSWORD)));
             }
 
-            if (paramKey.contains(Constants.KEY_QUES_ID)) {
+            if (paramKey.contains(Constants.KEY_QUES_ID) && httpServletRequest.getParameter(Constants.KEY_QUES_ID)!=null) {
                 try {
                     Question question = iQuestion.findOne(Long.valueOf(httpServletRequest.getParameter(Constants.KEY_QUES_ID)));
                     user.setQuestion(question);
@@ -110,23 +110,23 @@ public class UserController {
                     questionAnswer.setQuestion(question);
                     if (paramKey.contains(Constants.KEY_ANSWER))
                     questionAnswer.setAnswerText(httpServletRequest.getParameter(Constants.KEY_ANSWER));
-                    user.setQuestionAnswer(questionAnswer);
+                    user.setQuestionAnswer(httpServletRequest.getParameter(Constants.KEY_ANSWER));
                     iQuestionsAnswer.save(questionAnswer);
                 } catch (Exception ignored) {}
             }
 
             BoxerProfile boxerProfile = new BoxerProfile();
-            if (paramKey.contains(Constants.KEY_LEFT_DEVICE))
+            if (paramKey.contains(Constants.KEY_LEFT_DEVICE) && httpServletRequest.getParameter(Constants.KEY_LEFT_DEVICE)!=null)
                 boxerProfile.setLeftDevice(httpServletRequest.getParameter(Constants.KEY_LEFT_DEVICE));
-            if (paramKey.contains(Constants.KEY_RIGHT_DEVICE))
+            if (paramKey.contains(Constants.KEY_RIGHT_DEVICE) && httpServletRequest.getParameter(Constants.KEY_RIGHT_DEVICE)!=null)
                 boxerProfile.setRightDevice(httpServletRequest.getParameter(Constants.KEY_RIGHT_DEVICE));
-            if (paramKey.contains(Constants.KEY_LEFT_DEVICE_SENSOR_NAME))
+            if (paramKey.contains(Constants.KEY_LEFT_DEVICE_SENSOR_NAME) && httpServletRequest.getParameter(Constants.KEY_LEFT_DEVICE_SENSOR_NAME)!=null)
                 boxerProfile.setLeftDeviceSensorName(httpServletRequest.getParameter(Constants.KEY_LEFT_DEVICE_SENSOR_NAME));
-            if (paramKey.contains(Constants.KEY_LEFT_DEVICE_GENERATION))
+            if (paramKey.contains(Constants.KEY_LEFT_DEVICE_GENERATION) && httpServletRequest.getParameter(Constants.KEY_LEFT_DEVICE_GENERATION)!=null)
                 boxerProfile.setLeftDeviceGeneration(httpServletRequest.getParameter(Constants.KEY_LEFT_DEVICE_GENERATION));
-            if (paramKey.contains(Constants.KEY_RIGHT_DEVICE_SENSOR_NAME))
+            if (paramKey.contains(Constants.KEY_RIGHT_DEVICE_SENSOR_NAME) && httpServletRequest.getParameter(Constants.KEY_RIGHT_DEVICE_SENSOR_NAME)!=null)
                 boxerProfile.setRightDeviceSensorName(httpServletRequest.getParameter(Constants.KEY_RIGHT_DEVICE_SENSOR_NAME));
-            if (paramKey.contains(Constants.KEY_RIGHT_DEVICE_GENERATION))
+            if (paramKey.contains(Constants.KEY_RIGHT_DEVICE_GENERATION) && httpServletRequest.getParameter(Constants.KEY_RIGHT_DEVICE_GENERATION)!=null)
                 boxerProfile.setRightDeviceGeneration(httpServletRequest.getParameter(Constants.KEY_RIGHT_DEVICE_GENERATION));
             user.setBoxerProfile(boxerProfile);
 
@@ -145,8 +145,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -177,8 +177,8 @@ public class UserController {
                     resultJson.put(Constants.KEY_SUCCESS, true);
                     resultJson.put(Constants.KEY_MESSAGE, "Login successfully");
                     resultJson.put(Constants.KEY_TOKEN, token);
-                    resultJson.put(Constants.KEY_USER, user.getJSON());
-                    resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
+                    resultJson.put(Constants.KEY_USER, user.getJSON(iCountryDao.findOne(user.getCountryId())));
+                    resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON(user));
                     resultJson.put(Constants.KEY_TRAINING_SUMMARY, "");
                 } else {
                     resultJson.put(Constants.KEY_REASON, Constants.AUTH_FAIL);
@@ -195,8 +195,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -222,8 +222,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
 
@@ -238,7 +238,7 @@ public class UserController {
             String questionAnswer = httpServletRequest.getParameter(Constants.KEY_QUESTION_ANSWER);
 
             JSONObject resultJson = new JSONObject();
-            if (user.getQuestion().equals(question) && user.getQuestionAnswer().getAnswerText().equals(questionAnswer)) {
+            if (user.getQuestion().equals(question) && user.getQuestionAnswer().equals(questionAnswer)) {
 
                 user.setPassword("-1");
 
@@ -258,8 +258,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -289,8 +289,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -327,8 +327,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -361,7 +361,7 @@ public class UserController {
                 }
 
                 if (friend != null) {
-                    resultJson.put(Constants.KEY_FRIEND, friend.getJSON());
+                    resultJson.put(Constants.KEY_FRIEND, friend.getJSON(iCountryDao.findOne(user.getCountryId())));
                     resultJson.put(Constants.KEY_SUCCESS, true);
                 } else {
                     resultJson.put(Constants.KEY_ACCESS, false);
@@ -379,13 +379,13 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
 
-    @RequestMapping(value = "/userInfoUpdate", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateUserInfo", method = RequestMethod.POST)
     public void userInfoUpdate(HttpServletRequest httpServletRequest,
                          HttpServletResponse httpServletResponse) {
         try {
@@ -402,34 +402,34 @@ public class UserController {
                 List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
                 BoxerProfile boxerProfile = user.getBoxerProfile();
 
-                if (paramKey.contains("firstName")) {
+                if (paramKey.contains("firstName") && httpServletRequest.getParameter("firstName")!=null) {
                     user.setFirstName(httpServletRequest.getParameter("firstName"));
                 }
-                if (paramKey.contains("lastName")) {
+                if (paramKey.contains("lastName") && httpServletRequest.getParameter("lastName")!=null) {
                     user.setLastName(httpServletRequest.getParameter("lastName"));
                 }
-                if (paramKey.contains("stance")) {
+                if (paramKey.contains("stance") && httpServletRequest.getParameter("stance")!=null) {
                     boxerProfile.setStance(httpServletRequest.getParameter("stance"));
                 }
-                if (paramKey.contains("gender")) {
+                if (paramKey.contains("gender") && httpServletRequest.getParameter("gender")!=null) {
                     user.setGender((httpServletRequest.getParameter(Constants.KEY_GENDER).equals("M")));
                 }
-                if (paramKey.contains("dateOfBirth")) {
+                if (paramKey.contains("dateOfBirth") && httpServletRequest.getParameter("dateOfBirth")!=null) {
                     user.setDateOfBirthday(httpServletRequest.getParameter("dateOfBirth"));
                 }
-                if (paramKey.contains("weight")) {
+                if (paramKey.contains("weight") && httpServletRequest.getParameter("weight")!=null) {
                     boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
                 }
-                if (paramKey.contains("reach")) {
+                if (paramKey.contains("reach") && httpServletRequest.getParameter("reach")!=null && !Objects.equals(httpServletRequest.getParameter("reach"), "")) {
                     boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
                 }
-                if (paramKey.contains("skillLevel")) {
+                if (paramKey.contains("skillLevel") && httpServletRequest.getParameter("skillLevel")!=null) {
                     boxerProfile.setSkillLevel(httpServletRequest.getParameter("skillLevel"));
                 }
-                if (paramKey.contains("height")) {
+                if (paramKey.contains("height") && httpServletRequest.getParameter("height")!=null) {
                     boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
                 }
-                if (paramKey.contains("gloveType")) {
+                if (paramKey.contains("gloveType") && httpServletRequest.getParameter("gloveType")!=null) {
                     boxerProfile.setGloveType(httpServletRequest.getParameter("gloveType"));
                 }
 
@@ -437,8 +437,8 @@ public class UserController {
                 iUserDao.save(user);
 
                 resultJson.put(Constants.KEY_MESSAGE,"Change successfully");
-                resultJson.put(Constants.KEY_USER, user.getJSON());
-                resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON());
+                resultJson.put(Constants.KEY_USER, user.getJSON(iCountryDao.findOne(user.getCountryId())));
+                resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON(user));
 
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
@@ -453,8 +453,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }

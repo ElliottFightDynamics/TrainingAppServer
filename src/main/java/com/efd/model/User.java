@@ -1,7 +1,9 @@
 package com.efd.model;
 
 import com.efd.core.Constants;
+import com.efd.dao.ICountryDao;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,20 +22,18 @@ public class User {
     private long id;
     private String firstName;
     private String lastName;
+    @Column(unique = true)
     private String userName;
     private int zipCode;
-    @ManyToOne(optional=false)
-    @JoinColumn(name="id",referencedColumnName="id", insertable=false, updatable=false)
-    private Country country;
+    private Long countryId;
+    @Column(unique = true)
     private String email;
     private String password;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "question_id")
     private Question question;
-    @OneToOne
-    @JoinColumn(name = "id")
-    private QuestionAnswer questionAnswer;
+    private String questionAnswer;
 
     private String dateOfBirthday;
     private boolean gender;
@@ -229,9 +229,6 @@ public class User {
         this.accountLocked = accountLocked;
     }
 
-    public User() {
-    }
-
     public long getId() {
         return id;
     }
@@ -272,12 +269,12 @@ public class User {
         this.zipCode = zipCode;
     }
 
-    public Country getCountry() {
-        return country;
+    public Long getCountryId() {
+        return countryId;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
     }
 
     public String getEmail() {
@@ -304,15 +301,18 @@ public class User {
         this.question = question;
     }
 
-    public QuestionAnswer getQuestionAnswer() {
+    public String getQuestionAnswer() {
         return questionAnswer;
     }
 
-    public void setQuestionAnswer(QuestionAnswer questionAnswer) {
+    public void setQuestionAnswer(String questionAnswer) {
         this.questionAnswer = questionAnswer;
     }
 
-    public JSONObject getJSON() throws Exception {
+    public User() {
+    }
+
+    public JSONObject getJSON(Country country) throws Exception {
         JSONObject object = new JSONObject();
 
         object.put(Constants.KEY_CLASS,this);
@@ -323,6 +323,7 @@ public class User {
         object.put(Constants.KEY_ZIPCODE, zipCode);
 
         JSONObject countryJSON = new JSONObject();
+
         countryJSON.put(Constants.KEY_CLASS,country);
         countryJSON.put(Constants.KEY_ID, country.getId());
         object.put(Constants.KEY_COUNTRY, countryJSON);

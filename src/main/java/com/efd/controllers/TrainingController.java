@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by volodymyr on 20.06.17.
@@ -36,24 +37,30 @@ public class TrainingController {
     private final IDataDetailsDao iDataDetailsDao;
     private final IDataDao iDataDao;
     private final ISessionDao iSessionDao;
+    private final IPunchDetail iPunchDetail;
+    private final IPunchStats iPunchStats;
+    private final IPlanResults iPlanResults;
 
     @Autowired
-    public TrainingController(IUserDao iUserDao, IPunchDataPeakSummaryDao iPunchDataPeakSummaryDao, IPunchDataDao iPunchDataDao, IDataDetailsDao iDataDetailsDao, IDataDao iDataDao, ISessionDao iSessionDao) {
+    public TrainingController(IUserDao iUserDao, IPunchDataPeakSummaryDao iPunchDataPeakSummaryDao, IPunchDataDao iPunchDataDao, IDataDetailsDao iDataDetailsDao, IDataDao iDataDao, ISessionDao iSessionDao, IPunchDetail iPunchDetail, IPunchStats iPunchStats, IPlanResults iPlanResults) {
         this.iUserDao = iUserDao;
         this.iPunchDataPeakSummaryDao = iPunchDataPeakSummaryDao;
         this.iPunchDataDao = iPunchDataDao;
         this.iDataDetailsDao = iDataDetailsDao;
         this.iDataDao = iDataDao;
         this.iSessionDao = iSessionDao;
+        this.iPunchDetail = iPunchDetail;
+        this.iPunchStats = iPunchStats;
+        this.iPlanResults = iPlanResults;
     }
 
     private class IdsObject {
 
-        private Long serverId;
+        private String serverTime;
         private Integer id;
 
-        private IdsObject(Long serverId, Integer id) {
-            this.serverId = serverId;
+        private IdsObject(String serverTime, Integer id) {
+            this.serverTime = serverTime;
             this.id = id;
         }
     }
@@ -93,12 +100,11 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
-                            logger.error(e.getMessage());
-                            logger.error(e.getCause().getMessage());
+                            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
                             e.printStackTrace();
                         }
                     traineePunchDataPeakSummary = iPunchDataPeakSummaryDao.save(traineePunchDataPeakSummary);
-                    jsonArrayResponse.add(new IdsObject(traineePunchDataPeakSummary.getServerID(), traineePunchDataPeakSummary.getId()));
+                    jsonArrayResponse.add(new IdsObject(String.valueOf(traineePunchDataPeakSummary.getServerID()), traineePunchDataPeakSummary.getId()));
                 });
 
                 user.addPunchDataPeakSummaries(punchDataPeakSummaries);
@@ -122,8 +128,7 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -158,12 +163,12 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
-                            logger.error(e.getMessage());
-                            logger.error(e.getCause().getMessage());
+                            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
                             e.printStackTrace();
                         }
                     data = iPunchDataDao.save(data);
-                    jsonArrayResponse.add(new IdsObject(data.getServerID(), data.getId()));
+                    jsonArrayResponse.add(new IdsObject(String.valueOf(data.getServerID()), data.getId()));
                 });
 
                 user.addPunchData(traineePunchData);
@@ -187,8 +192,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -223,12 +228,12 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
-                            logger.error(e.getMessage());
-                            logger.error(e.getCause().getMessage());
+                            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
                             e.printStackTrace();
                         }
                     details = iDataDetailsDao.save(details);
-                    jsonArrayResponse.add(new IdsObject(details.getServerID(), details.getId()));
+                    jsonArrayResponse.add(new IdsObject(String.valueOf(details.getServerID()), details.getId()));
                 });
 
                 user.addDataDetails(traineeDataDetails);
@@ -251,8 +256,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -287,12 +292,12 @@ public class TrainingController {
                         } catch (Exception e) {
                             Secure secure = new Secure();
                             secure.throwException(e.getMessage(), httpServletResponse);
-                            logger.error(e.getMessage());
-                            logger.error(e.getCause().getMessage());
+                            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
                             e.printStackTrace();
                         }
                     traineeData1 = iDataDao.save(traineeData1);
-                    jsonArrayResponse.add(new IdsObject(traineeData1.getServerID(), traineeData1.getId()));
+                    jsonArrayResponse.add(new IdsObject(String.valueOf(traineeData1.getServerID()), traineeData1.getId()));
                 });
 
                 user.addData(data);
@@ -315,8 +320,8 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -344,22 +349,30 @@ public class TrainingController {
 
                 List<IdsObject> jsonArrayResponse = new ArrayList<>();
 
+                User finalUser = user;
                 traineeSessions.forEach(traineeSession -> {
-                    if (traineeSession.getSyncDate()==null)
-                        try {
-                            traineeSession.setSyncDate(getDateFormated());
-                        } catch (Exception e) {
-                            Secure secure = new Secure();
-                            secure.throwException(e.getMessage(), httpServletResponse);
-                            logger.error(e.getMessage());
-                            logger.error(e.getCause().getMessage());
-                            e.printStackTrace();
-                        }
-                    traineeSession = iSessionDao.save(traineeSession);
-                    jsonArrayResponse.add(new IdsObject(traineeSession.getServerID(), traineeSession.getId()));
-                });
 
-                user.addSessions(traineeSessions);
+                    TraineeSession session = iSessionDao.getByStartTime(traineeSession.getStartTime());
+
+                    if (session != null) {
+                        List<TraineeSession> list = finalUser.getTraineeSessions();
+                        list.remove(session);
+                        session.setLefthandInfo(traineeSession.getLefthandInfo());
+                        session.setRighthandInfo(traineeSession.getRighthandInfo());
+                        session.setLeftkickInfo(traineeSession.getLeftkickInfo());
+                        session.setRightkickInfo(traineeSession.getRightkickInfo());
+                        list.add(session);
+                        finalUser.setTraineeSessions(list);
+                        jsonArrayResponse.add(new IdsObject(session.getServerTime(), session.getId()));
+                    } else {
+                        traineeSession.setServerTime(String.valueOf(System.currentTimeMillis()));
+                        //traineeSession = iSessionDao.save(traineeSession);
+                        List<TraineeSession> list = finalUser.getTraineeSessions();
+                        list.add(traineeSession);
+                        finalUser.addSessions(list);
+                        jsonArrayResponse.add(new IdsObject(traineeSession.getServerTime(), traineeSession.getId()));
+                    }
+                });
 
                 iUserDao.save(user);
 
@@ -380,8 +393,168 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/trainingPunchDetail/saveBulkLocalData", method = RequestMethod.POST)
+    public void trainingPunchDetail(HttpServletRequest httpServletRequest,
+                                HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+            String trainingPunchDetail = httpServletRequest.getParameter("training_punch_detail");
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+                ObjectMapper mapper = new ObjectMapper();
+                List<TrainingPunchDetail> trainingPunchDetails = mapper.readValue(
+                        trainingPunchDetail,
+                        mapper.getTypeFactory().constructParametricType(List.class, TrainingPunchDetail.class)
+                );
+
+                List<IdsObject> jsonArrayResponse = new ArrayList<>();
+
+                trainingPunchDetails.forEach(punchDetail -> {
+                    punchDetail.setServerTime(String.valueOf(System.currentTimeMillis()));
+                    punchDetail = iPunchDetail.save(punchDetail);
+                    jsonArrayResponse.add(new IdsObject(punchDetail.getServerTime(), punchDetail.getId()));
+                });
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/trainingPunchStats/saveBulkLocalData", method = RequestMethod.POST)
+    public void trainingPunchStats(HttpServletRequest httpServletRequest,
+                                   HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+            String trainingPunchStats = httpServletRequest.getParameter("training_punch_stats");
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+                ObjectMapper mapper = new ObjectMapper();
+                List<TrainingPunchStats> punchStats = mapper.readValue(
+                        trainingPunchStats,
+                        mapper.getTypeFactory().constructParametricType(List.class, TrainingPunchStats.class)
+                );
+
+                List<IdsObject> jsonArrayResponse = new ArrayList<>();
+
+                punchStats.forEach(stats -> {
+                    TrainingPunchStats statsNew = iPunchStats.getByPunchedDateAndPunchType(stats.getPunchedDate(), stats.getPunchType());
+                    if (statsNew != null) {
+                        iPunchStats.delete(statsNew);
+                    }
+                    stats.setServerTime(String.valueOf(System.currentTimeMillis()));
+                    stats = iPunchStats.save(stats);
+                    jsonArrayResponse.add(new IdsObject(stats.getServerTime(), stats.getId()));
+                });
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/trainingPlanResults/saveBulkLocalData", method = RequestMethod.POST)
+    public void trainingPlanResults(HttpServletRequest httpServletRequest,
+                                   HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+            String trainingPlanResults = httpServletRequest.getParameter("training_plan_results");
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+                ObjectMapper mapper = new ObjectMapper();
+                List<TrainingPlanResults> planResults = mapper.readValue(
+                        trainingPlanResults,
+                        mapper.getTypeFactory().constructParametricType(List.class, TrainingPlanResults.class)
+                );
+
+                List<IdsObject> jsonArrayResponse = new ArrayList<>();
+
+                planResults.forEach(results -> {
+                    results.setServerTime(String.valueOf(System.currentTimeMillis()));
+                    results = iPlanResults.save(results);
+                    jsonArrayResponse.add(new IdsObject(results.getServerTime(), results.getId()));
+                });
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -389,7 +562,7 @@ public class TrainingController {
     @RequestMapping(value = "/getBulkLocalData", method = RequestMethod.POST)
     public void getBulkLocalData(HttpServletRequest httpServletRequest,
                                    HttpServletResponse httpServletResponse) {
-        try {
+        /*try {
             JSONObject resultJson = new JSONObject();
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
@@ -406,61 +579,68 @@ public class TrainingController {
                 if (iSessionDao.countAllBySyncTimestamp(String.valueOf(timestamp)) == 0) {
                     List<TraineeSession> traineeSession = iSessionDao.getAllByUserID(Integer.parseInt(userId));
                     traineeSession.forEach(traineeSession1 -> {
-                        if (Long.valueOf(traineeSession1.getTimestamp()) >= timestamp) {
+                        if (Long.valueOf(traineeSession1.getServerTime())==null || Long.valueOf(traineeSession1.getServerTime()) >= timestamp) {
                             traineeSession1.setSyncTimestamp(String.valueOf(timestamp));
                             iSessionDao.save(traineeSession1);
                         }
                     });
                 }
 
-                List<TraineeSession> traineeSessions = iSessionDao.getAllByUserID(Integer.parseInt(userId));
+                List<TrainingSession> answer = new ArrayList<>();
+                while (answer.size()<10) {
+                    List<TraineeSession> traineeSessions = iSessionDao.getAllByUserID(Integer.parseInt(userId));
 
 
-                TrainingSession session = new TrainingSession();
-                if (traineeSessions.stream().filter(traineeSession ->
-                        traineeSession.getSyncTimestamp()!=null &&
-                                Long.parseLong(traineeSession.getTimestamp()) >= timestamp &&
-                                !Objects.equals(traineeSession.getTimestamp(), "")).count()>=0) {
-                    TraineeSession traineeSession = traineeSessions.stream().filter(traineeSession1 ->
-                                    traineeSession1.getSyncTimestamp()!=null &&
-                                    !Objects.equals(traineeSession1.getSyncTimestamp(), ""))
-                            .findFirst().orElse(null);
-                    if (traineeSession!=null) {
-                        List<TraineeData> traineeDatas = iDataDao.getAllTraineeDataBySyncDate(traineeSession.getTrainingSessionDate());
-                        List<TrainingData> trainingDatas = new ArrayList<>();
+                    TrainingSession session = new TrainingSession();
+                    if (traineeSessions.stream().filter(traineeSession ->
+                            traineeSession.getSyncTimestamp() != null &&
+                                    Long.parseLong(traineeSession.getServerTime()) >= timestamp &&
+                                    !Objects.equals(traineeSession.getServerTime(), "")).count() >= 0) {
+                        TraineeSession traineeSession = traineeSessions.stream().filter(traineeSession1 ->
+                                traineeSession1.getSyncTimestamp() != null &&
+                                        !Objects.equals(traineeSession1.getSyncTimestamp(), ""))
+                                .findFirst().orElse(null);
+                        if (traineeSession != null) {
+                            List<TraineeData> traineeDatas = iDataDao.getAllTraineeDataBySyncDate(traineeSession.getTrainingSessionDate());
+                            List<TrainingData> trainingDatas = new ArrayList<>();
 
-                        if (traineeDatas.size() > 0) {
-                            traineeDatas.forEach(traineeData -> {
-                                TrainingData trainingData = new TrainingData();
-                                trainingData.setTraineeData(traineeData);
-                                try {
-                                    trainingData.setTraineePunchDataPeakSummary(iPunchDataPeakSummaryDao.getAllByDataTimestamp(traineeData.getTimestampe()));
-                                    trainingData.setTraineeDataDetails(iDataDetailsDao.getAllByDataTimestamp(traineeData.getTimestampe()));
-                                    trainingData.setTraineePunchData(iPunchDataDao.getAllByDataTimestamp(traineeData.getTimestampe()));
-                                } catch (Exception e) {
-                                    Secure secure = new Secure();
-                                    secure.throwException(e.getMessage(), httpServletResponse);
-                                    logger.error(e.getMessage());
-                                    logger.error(e.getCause().getMessage());
-                                    e.printStackTrace();
-                                }
-                                trainingDatas.add(trainingData);
-                            });
+                            if (traineeDatas.size() > 0) {
+                                traineeDatas.forEach(traineeData -> {
+                                    TrainingData trainingData = new TrainingData();
+                                    trainingData.setTraineeData(traineeData);
+                                    try {
+                                        trainingData.setTraineePunchDataPeakSummary(iPunchDataPeakSummaryDao.getAllByDataTimestamp(traineeData.getTimestampe()));
+                                        trainingData.setTraineeDataDetails(iDataDetailsDao.getAllByDataTimestamp(traineeData.getTimestampe()));
+                                        trainingData.setTraineePunchData(iPunchDataDao.getAllByDataTimestamp(traineeData.getTimestampe()));
+                                    } catch (Exception e) {
+                                        Secure secure = new Secure();
+                                        secure.throwException(e.getMessage(), httpServletResponse);
+                                        logger.error(e.getMessage());logger.error(e.getCause().getMessage());
 
+                                        e.printStackTrace();
+                                    }
+                                    trainingDatas.add(trainingData);
+                                });
+
+                            }
+                            session.setTraineeSession(traineeSession);
+                            session.setTraineeData(trainingDatas);
+
+                            traineeSession.setSyncTimestamp("");
+                            iSessionDao.save(traineeSession);
                         }
-                        session.setTraineeSession(traineeSession);
-                        session.setTraineeData(trainingDatas);
-
-                        traineeSession.setSyncTimestamp("");
-                        iSessionDao.save(traineeSession);
                     }
+                    if (session.traineeSession==null) {
+                        break;
+                    }
+                    answer.add(session);
                 }
 
                 int count = iSessionDao.countAllBySyncTimestamp(String.valueOf(timestamp));
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("trainingSession", new JSONObject(gson.toJson(session)));
+                resultJson.put("trainingSession", new JSONArray(gson.toJson(answer)));
                 resultJson.put("lastSession", count == 0);
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
@@ -476,11 +656,291 @@ public class TrainingController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }*/
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+
+                Long timestamp = Long.valueOf(httpServletRequest.getParameter("startDate"));
+
+                if (iSessionDao.countAllBySyncTimestamp(String.valueOf(timestamp)) == 0) {
+                    List<TraineeSession> trainingPunchDetails = iSessionDao.getAllByUserID(Integer.parseInt(userId));
+                    trainingPunchDetails.forEach(punchDetail -> {
+                        if (Long.valueOf(punchDetail.getServerTime()) >= timestamp) {
+                            punchDetail.setSyncTimestamp(String.valueOf(timestamp));
+                            iSessionDao.save(punchDetail);
+                        }
+                    });
+                }
+
+                List<TraineeSession> trainingPunchDetails = iSessionDao.getAllByUserID(Integer.parseInt(userId));
+
+
+                List<TraineeSession> punchDetails = trainingPunchDetails.stream().filter(punchDetail ->
+                        punchDetail.getSyncTimestamp() != null &&
+                                !Objects.equals(punchDetail.getSyncTimestamp(), "")).collect(Collectors.toList());
+
+                List<TraineeSession> answer = new ArrayList<>();
+
+                for (TraineeSession detail : punchDetails) {
+                    if (answer.size() == 10) {
+                        break;
+                    }
+                    detail.setSyncTimestamp("");
+                    detail = iSessionDao.save(detail);
+                    answer.add(detail);
+                }
+
+                int count = iPunchDetail.countAllBySyncTimestamp(String.valueOf(timestamp));
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("trainingSession", new JSONArray(gson.toJson(answer)));
+                resultJson.put("last", count == 0);
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
+
+    @RequestMapping(value = "/getTrainingPunchDetail", method = RequestMethod.POST)
+    public void getTrainingPunchDetail(HttpServletRequest httpServletRequest,
+                                 HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+
+                Long timestamp = Long.valueOf(httpServletRequest.getParameter("startDate"));
+
+                if (iPunchDetail.countAllBySyncTimestamp(String.valueOf(timestamp)) == 0) {
+                    List<TrainingPunchDetail> trainingPunchDetails = iPunchDetail.getAllByUserID(Integer.parseInt(userId));
+                    trainingPunchDetails.forEach(punchDetail -> {
+                        if (Long.valueOf(punchDetail.getServerTime()) >= timestamp) {
+                            punchDetail.setSyncTimestamp(String.valueOf(timestamp));
+                            iPunchDetail.save(punchDetail);
+                        }
+                    });
+                }
+
+                List<TrainingPunchDetail> trainingPunchDetails = iPunchDetail.getAllByUserID(Integer.parseInt(userId));
+
+
+                List<TrainingPunchDetail> punchDetails = trainingPunchDetails.stream().filter(punchDetail ->
+                        punchDetail.getSyncTimestamp() != null &&
+                        !Objects.equals(punchDetail.getSyncTimestamp(), "")).collect(Collectors.toList());
+
+                List<TrainingPunchDetail> answer = new ArrayList<>();
+
+                for (TrainingPunchDetail detail : punchDetails) {
+                    if (answer.size() == 100) {
+                        break;
+                    }
+                    detail.setSyncTimestamp("");
+                    detail = iPunchDetail.save(detail);
+                    answer.add(detail);
+                }
+
+                int count = iPunchDetail.countAllBySyncTimestamp(String.valueOf(timestamp));
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("trainingPunchDetail", new JSONArray(gson.toJson(answer)));
+                resultJson.put("last", count == 0);
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/getTrainingPunchStats", method = RequestMethod.POST)
+    public void getTrainingPunchStats(HttpServletRequest httpServletRequest,
+                                 HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+
+                Long timestamp = Long.valueOf(httpServletRequest.getParameter("startDate"));
+
+                if (iPunchStats.countAllBySyncTimestamp(String.valueOf(timestamp)) == 0) {
+                    List<TrainingPunchStats> trainingPunchStats = iPunchStats.getAllByUserID(Integer.parseInt(userId));
+                    trainingPunchStats.forEach(punchStats -> {
+                        if (Long.valueOf(punchStats.getServerTime()) >= timestamp) {
+                            punchStats.setSyncTimestamp(String.valueOf(timestamp));
+                            iPunchStats.save(punchStats);
+                        }
+                    });
+                }
+
+                List<TrainingPunchStats> trainingPunchStats = iPunchStats.getAllByUserID(Integer.parseInt(userId));
+
+
+                List<TrainingPunchStats> punchStats = trainingPunchStats.stream().filter(punchDetail ->
+                        punchDetail.getSyncTimestamp() != null &&
+                                !Objects.equals(punchDetail.getSyncTimestamp(), "")).collect(Collectors.toList());
+
+                List<TrainingPunchStats> answer = new ArrayList<>();
+
+                for (TrainingPunchStats detail : punchStats) {
+                    if (answer.size() == 10) {
+                        break;
+                    }
+                    detail.setSyncTimestamp("");
+                    detail = iPunchStats.save(detail);
+                    answer.add(detail);
+                }
+
+                int count = iPunchStats.countAllBySyncTimestamp(String.valueOf(timestamp));
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("trainingPunchStats", new JSONArray(gson.toJson(answer)));
+                resultJson.put("last", count == 0);
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "/getTrainingPlanResults", method = RequestMethod.POST)
+    public void getTrainingPlanResults(HttpServletRequest httpServletRequest,
+                                      HttpServletResponse httpServletResponse) {
+        try {
+            JSONObject resultJson = new JSONObject();
+            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
+            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
+
+            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
+            if (user==null) {
+                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
+            }
+
+            if (iUserDao.confirmToken(user.getUserName(), token)) {
+
+                Long timestamp = Long.valueOf(httpServletRequest.getParameter("startDate"));
+
+                if (iPlanResults.countAllBySyncTimestamp(String.valueOf(timestamp)) == 0) {
+                    List<TrainingPlanResults> trainingPlanResults = iPlanResults.getAllByUserID(Integer.parseInt(userId));
+                    trainingPlanResults.forEach(planResults -> {
+                        if (Long.valueOf(planResults.getServerTime()) >= timestamp) {
+                            planResults.setSyncTimestamp(String.valueOf(timestamp));
+                            iPlanResults.save(planResults);
+                        }
+                    });
+                }
+
+                List<TrainingPlanResults> trainingPlanResults = iPlanResults.getAllByUserID(Integer.parseInt(userId));
+
+
+                List<TrainingPlanResults> planResults = trainingPlanResults.stream().filter(results ->
+                        results.getSyncTimestamp() != null &&
+                                !Objects.equals(results.getSyncTimestamp(), "")).collect(Collectors.toList());
+
+                List<TrainingPlanResults> answer = new ArrayList<>();
+
+                for (TrainingPlanResults detail : planResults) {
+                    if (answer.size() == 10) {
+                        break;
+                    }
+                    detail.setSyncTimestamp("");
+                    detail = iPlanResults.save(detail);
+                    answer.add(detail);
+                }
+
+                int count = iPlanResults.countAllBySyncTimestamp(String.valueOf(timestamp));
+
+                Gson gson = new GsonBuilder().create();
+
+                resultJson.put("trainingPlanResults", new JSONArray(gson.toJson(answer)));
+                resultJson.put("last", count == 0);
+                resultJson.put(Constants.KEY_ACCESS, true);
+                resultJson.put(Constants.KEY_SUCCESS,true);
+            } else {
+                resultJson.put(Constants.KEY_ACCESS, false);
+                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
+                resultJson.put(Constants.KEY_SUCCESS,false);
+            }
+
+            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
+
+            httpServletResponse.getWriter().write(resultJson.toString());
+        } catch (Exception e) {
+            Secure secure = new Secure();
+            secure.throwException(e.getMessage(), httpServletResponse);
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
+            e.printStackTrace();
+        }
+    }
+
 
     class TrainingSession {
         TraineeSession traineeSession;

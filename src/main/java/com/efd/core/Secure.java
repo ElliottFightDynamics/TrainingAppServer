@@ -75,15 +75,16 @@ public class Secure {
             Transport.send(message);
             return true;
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             return false;
         }
 
     }
 
     public String generateNewPassword() throws Exception {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+        //String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         return RandomStringUtils.random( 8, characters );
     }
 

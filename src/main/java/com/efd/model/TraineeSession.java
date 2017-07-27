@@ -17,13 +17,24 @@ public class TraineeSession {
     private String trainingSessionDate;
     private String trainingType;
     private Integer userID;
-    private Integer sync;
-    private String syncDate;
-    private String timestamp;
+    private Double avgSpeed;
+    private Double avgForce;
+    private Double maxSpeed;
+    private Double maxForce;
+    private int totalPunchCount;
+    private String serverTime;
+    private String lefthandInfo;
+    private String righthandInfo;
+    private String leftkickInfo;
+    private String rightkickInfo;
+
     @ManyToOne
     @JoinColumn(name="traineeSessions",referencedColumnName="id", insertable=false, updatable=false)
     private User user;
-    private String syncTimestamp;
+
+    public String getTimestamp() {
+        return timestamp;
+    }
 
     public User getUser() {
         return user;
@@ -33,7 +44,8 @@ public class TraineeSession {
         this.user = user;
     }
 
-    public TraineeSession() {
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getSyncTimestamp() {
@@ -44,12 +56,50 @@ public class TraineeSession {
         this.syncTimestamp = syncTimestamp;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    private String syncTimestamp;
+    private String timestamp;
+
+    public TraineeSession() {
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public String getLefthandInfo() {
+        return lefthandInfo;
+    }
+
+    public void setLefthandInfo(String lefthandInfo) {
+        this.lefthandInfo = lefthandInfo;
+    }
+
+    public String getRighthandInfo() {
+        return righthandInfo;
+    }
+
+    public void setRighthandInfo(String righthandInfo) {
+        this.righthandInfo = righthandInfo;
+    }
+
+    public String getLeftkickInfo() {
+        return leftkickInfo;
+    }
+
+    public void setLeftkickInfo(String leftkickInfo) {
+        this.leftkickInfo = leftkickInfo;
+    }
+
+    public String getRightkickInfo() {
+        return rightkickInfo;
+    }
+
+    public void setRightkickInfo(String rightkickInfo) {
+        this.rightkickInfo = rightkickInfo;
+    }
+
+    public Long getServerID() {
+        return serverID;
+    }
+
+    public void setServerID(Long serverID) {
+        this.serverID = serverID;
     }
 
     public Integer getId() {
@@ -100,27 +150,51 @@ public class TraineeSession {
         this.userID = userID;
     }
 
-    public Integer getSync() {
-        return sync;
+    public Double getAvgSpeed() {
+        return avgSpeed;
     }
 
-    public void setSync(Integer sync) {
-        this.sync = sync;
+    public void setAvgSpeed(Double avgSpeed) {
+        this.avgSpeed = avgSpeed;
     }
 
-    public String getSyncDate() {
-        return syncDate;
+    public Double getAvgForce() {
+        return avgForce;
     }
 
-    public void setSyncDate(String syncDate) {
-        this.syncDate = syncDate;
+    public void setAvgForce(Double avgForce) {
+        this.avgForce = avgForce;
     }
 
-    public Long getServerID() {
-        return serverID;
+    public Double getMaxSpeed() {
+        return maxSpeed;
     }
 
-    public void setServerID(Long serverID) {
-        this.serverID = serverID;
+    public void setMaxSpeed(Double maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public Double getMaxForce() {
+        return maxForce;
+    }
+
+    public void setMaxForce(Double maxForce) {
+        this.maxForce = maxForce;
+    }
+
+    public int getTotalPunchCount() {
+        return totalPunchCount;
+    }
+
+    public void setTotalPunchCount(int totalPunchCount) {
+        this.totalPunchCount = totalPunchCount;
+    }
+
+    public String getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(String serverTime) {
+        this.serverTime = serverTime;
     }
 }

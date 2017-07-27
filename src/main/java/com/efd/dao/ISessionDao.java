@@ -15,5 +15,6 @@ public interface ISessionDao extends CrudRepository<TraineeSession, String> {
 
     List<TraineeSession> getAllByUserID(int userId) throws Exception;
     int countAllBySyncTimestamp(String sync) throws Exception;
+    TraineeSession getByStartTime(String startTime);
 
 }

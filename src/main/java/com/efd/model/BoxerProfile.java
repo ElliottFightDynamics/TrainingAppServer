@@ -172,7 +172,7 @@ public class BoxerProfile {
         this.id = id;
     }
 
-    public JSONObject getJSON() throws Exception {
+    public JSONObject getJSON(User user) throws Exception {
         JSONObject object = new JSONObject();
 
         object.put(Constants.KEY_CLASS, this);

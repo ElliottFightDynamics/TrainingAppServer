@@ -44,8 +44,8 @@ public class QuestionController {
                 } catch (Exception e) {
                     Secure secure = new Secure();
                     secure.throwException(e.getMessage(), httpServletResponse);
-                    logger.error(e.getMessage());
-                    logger.error(e.getCause().getMessage());
+                    logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
                     e.printStackTrace();
                 }
             });
@@ -59,8 +59,8 @@ public class QuestionController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }

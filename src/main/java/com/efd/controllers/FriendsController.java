@@ -69,7 +69,7 @@ public class FriendsController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
             logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
@@ -114,8 +114,8 @@ public class FriendsController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
@@ -151,8 +151,8 @@ public class FriendsController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());
-            logger.error(e.getCause().getMessage());
+            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
+
             e.printStackTrace();
         }
     }
