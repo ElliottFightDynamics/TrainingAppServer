@@ -59,8 +59,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
-
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -70,7 +70,6 @@ public class UserController {
                                               HttpServletResponse httpServletResponse) throws NoSuchAlgorithmException {
 
         try {
-
             User user = new User();
             List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
             if (paramKey.contains(Constants.KEY_FIRST_NAME) && httpServletRequest.getParameter(Constants.KEY_FIRST_NAME)!=null)
@@ -95,8 +94,11 @@ public class UserController {
                 } catch (Exception ignored) {}
             }
 
-            user.setEmail(httpServletRequest.getParameter(Constants.KEY_EMAIL_ID));
-            user.setSecureToken(secure.generateToken());
+            if (paramKey.contains(Constants.KEY_EMAIL_ID) && httpServletRequest.getParameter(Constants.KEY_EMAIL_ID)!=null) {
+                user.setEmail(httpServletRequest.getParameter(Constants.KEY_EMAIL_ID));
+            }
+            String token = secure.generateToken();
+            user.setSecureToken(token);
 
             if (paramKey.contains(Constants.KEY_PASSWORD)) {
                 user.setPassword(secure.sha256(httpServletRequest.getParameter(Constants.KEY_PASSWORD)));
@@ -108,11 +110,16 @@ public class UserController {
                     user.setQuestion(question);
                     QuestionAnswer questionAnswer = new QuestionAnswer();
                     questionAnswer.setQuestion(question);
-                    if (paramKey.contains(Constants.KEY_ANSWER))
-                    questionAnswer.setAnswerText(httpServletRequest.getParameter(Constants.KEY_ANSWER));
-                    user.setQuestionAnswer(httpServletRequest.getParameter(Constants.KEY_ANSWER));
+                    if (paramKey.contains(Constants.KEY_ANSWER)) {
+                        questionAnswer.setAnswerText(httpServletRequest.getParameter(Constants.KEY_ANSWER));
+                        user.setQuestionAnswer(httpServletRequest.getParameter(Constants.KEY_ANSWER));
+                    }
                     iQuestionsAnswer.save(questionAnswer);
                 } catch (Exception ignored) {}
+            }
+
+            if (paramKey.contains(Constants.KEY_PHOTO_URL) && httpServletRequest.getParameter(Constants.KEY_PHOTO_URL)!=null) {
+                user.setPhoto(httpServletRequest.getParameter(Constants.KEY_PHOTO_URL));
             }
 
             BoxerProfile boxerProfile = new BoxerProfile();
@@ -137,7 +144,8 @@ public class UserController {
             resultJson.put(Constants.KEY_SUCCESS, true);
             resultJson.put(Constants.KEY_MESSAGE, "Trainee successfully created");
             resultJson.put(Constants.KEY_TRAINEE_SERVER_ID, user.getId());
-            resultJson.put(Constants.KEY_TOKEN, user.getSecureToken());
+            resultJson.put(Constants.KEY_TOKEN, token);
+            resultJson.put(Constants.KEY_PHOTO_URL, user.getPhoto());
 
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
 
@@ -145,8 +153,8 @@ public class UserController {
         } catch (Exception e) {
             Secure secure = new Secure();
             secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
-
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
             e.printStackTrace();
         }
     }
@@ -177,7 +185,7 @@ public class UserController {
                     resultJson.put(Constants.KEY_SUCCESS, true);
                     resultJson.put(Constants.KEY_MESSAGE, "Login successfully");
                     resultJson.put(Constants.KEY_TOKEN, token);
-                    resultJson.put(Constants.KEY_USER, user.getJSON(iCountryDao.findOne(user.getCountryId())));
+                    resultJson.put(Constants.KEY_USER, user.getJSON(iCountryDao.findOne((user.getCountryId()==null)?1:user.getCountryId())));
                     resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON(user));
                     resultJson.put(Constants.KEY_TRAINING_SUMMARY, "");
                 } else {
@@ -244,10 +252,8 @@ public class UserController {
 
                 iUserDao.save(user);
 
-                resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
-                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -280,7 +286,6 @@ public class UserController {
 
                 resultJson.put(Constants.KEY_SUCCESS, true);
             } else {
-                resultJson.put(Constants.KEY_ACCESS, false);
                 resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
                 resultJson.put(Constants.KEY_SUCCESS,false);
             }
@@ -303,13 +308,13 @@ public class UserController {
             BoxerProfile boxerProfile = user.getBoxerProfile();
             List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
             int weight = boxerProfile.getWeight();
-            if (paramKey.contains(Constants.KEY_WEIGHT)) {
+            if (paramKey.contains(Constants.KEY_WEIGHT) && httpServletRequest.getParameter(Constants.KEY_WEIGHT)!=null) {
                 weight = Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_WEIGHT));
                 boxerProfile.setWeight(weight);
             }
 
             String gloveType = boxerProfile.getGloveType();
-            if (paramKey.contains(Constants.KEY_GLOVE_TYPE)) {
+            if (paramKey.contains(Constants.KEY_GLOVE_TYPE) && httpServletRequest.getParameter(Constants.KEY_GLOVE_TYPE)!=null) {
                 gloveType = httpServletRequest.getParameter(Constants.KEY_GLOVE_TYPE);
                 boxerProfile.setGloveType(gloveType);
             }
@@ -350,18 +355,18 @@ public class UserController {
             if (iUserDao.confirmToken(user.getUserName(), token)) {
                 List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
                 User friend = null;
-                if (paramKey.contains(Constants.KEY_FRIEND_EMAIL_ID)) {
+                if (paramKey.contains(Constants.KEY_FRIEND_EMAIL_ID) && httpServletRequest.getParameter(Constants.KEY_FRIEND_EMAIL_ID)!=null) {
                     friend = iUserDao.findUserByEmail(httpServletRequest.getParameter(Constants.KEY_FRIEND_EMAIL_ID));
-                } else if (paramKey.contains(Constants.KEY_FRIEND_FIRST_NAME)) {
+                } else if (paramKey.contains(Constants.KEY_FRIEND_FIRST_NAME) && httpServletRequest.getParameter(Constants.KEY_FRIEND_FIRST_NAME)!=null) {
                     friend = iUserDao.findUserByFirstName(httpServletRequest.getParameter(Constants.KEY_FRIEND_FIRST_NAME));
-                } else if (paramKey.contains(Constants.KEY_FRIEND_LAST_NAME)) {
+                } else if (paramKey.contains(Constants.KEY_FRIEND_LAST_NAME) && httpServletRequest.getParameter(Constants.KEY_FRIEND_LAST_NAME)!=null) {
                     friend = iUserDao.findUserByLastName(httpServletRequest.getParameter(Constants.KEY_FRIEND_LAST_NAME));
-                } else if (paramKey.contains(Constants.KEY_FRIEND_USERNAME)) {
+                } else if (paramKey.contains(Constants.KEY_FRIEND_USERNAME) && httpServletRequest.getParameter(Constants.KEY_FRIEND_USERNAME)!=null) {
                     friend = iUserDao.findUserByUserName(httpServletRequest.getParameter(Constants.KEY_FRIEND_USERNAME));
                 }
 
                 if (friend != null) {
-                    resultJson.put(Constants.KEY_FRIEND, friend.getJSON(iCountryDao.findOne(user.getCountryId())));
+                    resultJson.put(Constants.KEY_FRIEND, friend.getJSON(iCountryDao.findOne((user.getCountryId()==null)?1:user.getCountryId())));
                     resultJson.put(Constants.KEY_SUCCESS, true);
                 } else {
                     resultJson.put(Constants.KEY_ACCESS, false);
@@ -402,42 +407,42 @@ public class UserController {
                 List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
                 BoxerProfile boxerProfile = user.getBoxerProfile();
 
-                if (paramKey.contains("firstName") && httpServletRequest.getParameter("firstName")!=null) {
-                    user.setFirstName(httpServletRequest.getParameter("firstName"));
+                if (paramKey.contains(Constants.KEY_FIRST_NAME) && httpServletRequest.getParameter(Constants.KEY_FIRST_NAME)!=null) {
+                    user.setFirstName(httpServletRequest.getParameter(Constants.KEY_FIRST_NAME));
                 }
-                if (paramKey.contains("lastName") && httpServletRequest.getParameter("lastName")!=null) {
-                    user.setLastName(httpServletRequest.getParameter("lastName"));
+                if (paramKey.contains(Constants.KEY_LAST_NAME) && httpServletRequest.getParameter(Constants.KEY_LAST_NAME)!=null) {
+                    user.setLastName(httpServletRequest.getParameter(Constants.KEY_LAST_NAME));
                 }
-                if (paramKey.contains("stance") && httpServletRequest.getParameter("stance")!=null) {
-                    boxerProfile.setStance(httpServletRequest.getParameter("stance"));
+                if (paramKey.contains(Constants.KEY_STANCE) && httpServletRequest.getParameter(Constants.KEY_STANCE)!=null) {
+                    boxerProfile.setStance(httpServletRequest.getParameter(Constants.KEY_STANCE));
                 }
-                if (paramKey.contains("gender") && httpServletRequest.getParameter("gender")!=null) {
+                if (paramKey.contains(Constants.KEY_GENDER) && httpServletRequest.getParameter(Constants.KEY_GENDER)!=null) {
                     user.setGender((httpServletRequest.getParameter(Constants.KEY_GENDER).equals("M")));
                 }
-                if (paramKey.contains("dateOfBirth") && httpServletRequest.getParameter("dateOfBirth")!=null) {
-                    user.setDateOfBirthday(httpServletRequest.getParameter("dateOfBirth"));
+                if (paramKey.contains(Constants.KEY_DATE_OF_BIRTHDAY) && httpServletRequest.getParameter(Constants.KEY_DATE_OF_BIRTHDAY)!=null) {
+                    user.setDateOfBirthday(httpServletRequest.getParameter(Constants.KEY_DATE_OF_BIRTHDAY));
                 }
-                if (paramKey.contains("weight") && httpServletRequest.getParameter("weight")!=null) {
-                    boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter("weight")));
+                if (paramKey.contains(Constants.KEY_WEIGHT) && httpServletRequest.getParameter(Constants.KEY_WEIGHT)!=null) {
+                    boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_WEIGHT)));
                 }
-                if (paramKey.contains("reach") && httpServletRequest.getParameter("reach")!=null && !Objects.equals(httpServletRequest.getParameter("reach"), "")) {
-                    boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter("reach")));
+                if (paramKey.contains(Constants.KEY_REACH) && httpServletRequest.getParameter(Constants.KEY_REACH)!=null && !Objects.equals(httpServletRequest.getParameter("reach"), "")) {
+                    boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_REACH)));
                 }
-                if (paramKey.contains("skillLevel") && httpServletRequest.getParameter("skillLevel")!=null) {
-                    boxerProfile.setSkillLevel(httpServletRequest.getParameter("skillLevel"));
+                if (paramKey.contains(Constants.KEY_SKILL_LEVEL) && httpServletRequest.getParameter(Constants.KEY_SKILL_LEVEL)!=null) {
+                    boxerProfile.setSkillLevel(httpServletRequest.getParameter(Constants.KEY_SKILL_LEVEL));
                 }
-                if (paramKey.contains("height") && httpServletRequest.getParameter("height")!=null) {
-                    boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter("height")));
+                if (paramKey.contains(Constants.KEY_HEIGHT) && httpServletRequest.getParameter(Constants.KEY_HEIGHT)!=null) {
+                    boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_HEIGHT)));
                 }
-                if (paramKey.contains("gloveType") && httpServletRequest.getParameter("gloveType")!=null) {
-                    boxerProfile.setGloveType(httpServletRequest.getParameter("gloveType"));
+                if (paramKey.contains(Constants.KEY_GLOVE_TYPE) && httpServletRequest.getParameter(Constants.KEY_GLOVE_TYPE)!=null) {
+                    boxerProfile.setGloveType(httpServletRequest.getParameter(Constants.KEY_GLOVE_TYPE));
                 }
 
                 iBoxerProfileDao.save(boxerProfile);
                 iUserDao.save(user);
 
                 resultJson.put(Constants.KEY_MESSAGE,"Change successfully");
-                resultJson.put(Constants.KEY_USER, user.getJSON(iCountryDao.findOne(user.getCountryId())));
+                resultJson.put(Constants.KEY_USER, user.getJSON(iCountryDao.findOne((user.getCountryId()==null)?1:user.getCountryId())));
                 resultJson.put(Constants.KEY_BOXER_PROFILE, boxerProfile.getJSON(user));
 
                 resultJson.put(Constants.KEY_ACCESS, true);

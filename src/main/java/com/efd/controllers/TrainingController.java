@@ -113,7 +113,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -177,7 +177,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -241,7 +241,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -305,7 +305,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -378,7 +378,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -406,7 +406,7 @@ public class TrainingController {
             JSONObject resultJson = new JSONObject();
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
-            String trainingPunchDetail = httpServletRequest.getParameter("training_punch_detail");
+            String trainingPunchDetail = httpServletRequest.getParameter(Constants.KEY_TRAINING_PUNCH_DETAIL);
 
             User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
             if (user==null) {
@@ -430,7 +430,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -458,7 +458,7 @@ public class TrainingController {
             JSONObject resultJson = new JSONObject();
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
-            String trainingPunchStats = httpServletRequest.getParameter("training_punch_stats");
+            String trainingPunchStats = httpServletRequest.getParameter(Constants.TRAINING_PUNCH_STATS);
 
             User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
             if (user==null) {
@@ -486,7 +486,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -514,7 +514,7 @@ public class TrainingController {
             JSONObject resultJson = new JSONObject();
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
             String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
-            String trainingPlanResults = httpServletRequest.getParameter("training_plan_results");
+            String trainingPlanResults = httpServletRequest.getParameter(Constants.TRAINING_PLAN_RESULTS);
 
             User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
             if (user==null) {
@@ -538,7 +538,7 @@ public class TrainingController {
 
                 Gson gson = new GsonBuilder().create();
 
-                resultJson.put("jsonArrayResponse", new JSONArray(gson.toJson(jsonArrayResponse)));
+                resultJson.put(Constants.KEY_JSON_ARRAY_RESPONSE, new JSONArray(gson.toJson(jsonArrayResponse)));
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS,true);
             } else {
@@ -562,104 +562,6 @@ public class TrainingController {
     @RequestMapping(value = "/getBulkLocalData", method = RequestMethod.POST)
     public void getBulkLocalData(HttpServletRequest httpServletRequest,
                                    HttpServletResponse httpServletResponse) {
-        /*try {
-            JSONObject resultJson = new JSONObject();
-            String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);
-            String token = httpServletRequest.getParameter(Constants.KEY_TOKEN);
-
-            User user = iUserDao.findUserByUserNameOrEmail(userId, userId);
-            if (user==null) {
-                user = iUserDao.findUserByUserNameOrEmailOrId(userId, userId, Long.valueOf(userId));
-            }
-
-            if (iUserDao.confirmToken(user.getUserName(), token)) {
-
-                Long timestamp = Long.valueOf(httpServletRequest.getParameter("startDate"));
-
-                if (iSessionDao.countAllBySyncTimestamp(String.valueOf(timestamp)) == 0) {
-                    List<TraineeSession> traineeSession = iSessionDao.getAllByUserID(Integer.parseInt(userId));
-                    traineeSession.forEach(traineeSession1 -> {
-                        if (Long.valueOf(traineeSession1.getServerTime())==null || Long.valueOf(traineeSession1.getServerTime()) >= timestamp) {
-                            traineeSession1.setSyncTimestamp(String.valueOf(timestamp));
-                            iSessionDao.save(traineeSession1);
-                        }
-                    });
-                }
-
-                List<TrainingSession> answer = new ArrayList<>();
-                while (answer.size()<10) {
-                    List<TraineeSession> traineeSessions = iSessionDao.getAllByUserID(Integer.parseInt(userId));
-
-
-                    TrainingSession session = new TrainingSession();
-                    if (traineeSessions.stream().filter(traineeSession ->
-                            traineeSession.getSyncTimestamp() != null &&
-                                    Long.parseLong(traineeSession.getServerTime()) >= timestamp &&
-                                    !Objects.equals(traineeSession.getServerTime(), "")).count() >= 0) {
-                        TraineeSession traineeSession = traineeSessions.stream().filter(traineeSession1 ->
-                                traineeSession1.getSyncTimestamp() != null &&
-                                        !Objects.equals(traineeSession1.getSyncTimestamp(), ""))
-                                .findFirst().orElse(null);
-                        if (traineeSession != null) {
-                            List<TraineeData> traineeDatas = iDataDao.getAllTraineeDataBySyncDate(traineeSession.getTrainingSessionDate());
-                            List<TrainingData> trainingDatas = new ArrayList<>();
-
-                            if (traineeDatas.size() > 0) {
-                                traineeDatas.forEach(traineeData -> {
-                                    TrainingData trainingData = new TrainingData();
-                                    trainingData.setTraineeData(traineeData);
-                                    try {
-                                        trainingData.setTraineePunchDataPeakSummary(iPunchDataPeakSummaryDao.getAllByDataTimestamp(traineeData.getTimestampe()));
-                                        trainingData.setTraineeDataDetails(iDataDetailsDao.getAllByDataTimestamp(traineeData.getTimestampe()));
-                                        trainingData.setTraineePunchData(iPunchDataDao.getAllByDataTimestamp(traineeData.getTimestampe()));
-                                    } catch (Exception e) {
-                                        Secure secure = new Secure();
-                                        secure.throwException(e.getMessage(), httpServletResponse);
-                                        logger.error(e.getMessage());logger.error(e.getCause().getMessage());
-
-                                        e.printStackTrace();
-                                    }
-                                    trainingDatas.add(trainingData);
-                                });
-
-                            }
-                            session.setTraineeSession(traineeSession);
-                            session.setTraineeData(trainingDatas);
-
-                            traineeSession.setSyncTimestamp("");
-                            iSessionDao.save(traineeSession);
-                        }
-                    }
-                    if (session.traineeSession==null) {
-                        break;
-                    }
-                    answer.add(session);
-                }
-
-                int count = iSessionDao.countAllBySyncTimestamp(String.valueOf(timestamp));
-
-                Gson gson = new GsonBuilder().create();
-
-                resultJson.put("trainingSession", new JSONArray(gson.toJson(answer)));
-                resultJson.put("lastSession", count == 0);
-                resultJson.put(Constants.KEY_ACCESS, true);
-                resultJson.put(Constants.KEY_SUCCESS,true);
-            } else {
-                resultJson.put(Constants.KEY_ACCESS, false);
-                resultJson.put(Constants.KEY_REASON,Constants.AUTH_FAIL);
-                resultJson.put(Constants.KEY_SUCCESS,false);
-            }
-
-            httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
-
-            httpServletResponse.getWriter().write(resultJson.toString());
-        } catch (Exception e) {
-            Secure secure = new Secure();
-            secure.throwException(e.getMessage(), httpServletResponse);
-            logger.error(e.getMessage());logger.error(e.getCause().getMessage());
-
-            e.printStackTrace();
-        }*/
         try {
             JSONObject resultJson = new JSONObject();
             String userId = httpServletRequest.getParameter(Constants.KEY_USER_ID);

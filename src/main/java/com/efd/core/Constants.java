@@ -47,7 +47,7 @@ public class Constants {
     public static final String KEY_FRIEND_EMAIL_ID = "friendEmailId";
     public static final String KEY_FRIEND_FIRST_NAME = "friendFirstName";
     public static final String KEY_FRIEND_LAST_NAME = "friendLastName";
-    public static final String KEY_FRIEND_USERNAME = "friendUserName";
+    public static final String KEY_FRIEND_USERNAME = "friendUsername";
     public static final String KEY_FRIEND = "friend";
     public static final String KEY_TRAINING_PUNCH_DATA_PEAK_SUMMARY = "training_punch_data_peak_summary";
     public static final String KEY_TRAINING_PUNCH_DATA = "training_punch_data";
@@ -84,5 +84,8 @@ public class Constants {
     public static final String KEY_WAIST = "waist";
     public static final String KEY_COMBO = "combo";
     public static final String KEY_SERVER_ID = "serverId";
-
+    public static final String KEY_JSON_ARRAY_RESPONSE = "jsonArrayResponse";
+    public static final String KEY_TRAINING_PUNCH_DETAIL = "training_punch_detail";
+    public static final String TRAINING_PUNCH_STATS = "training_punch_stats";
+    public static final String TRAINING_PLAN_RESULTS = "training_plan_results";
 }

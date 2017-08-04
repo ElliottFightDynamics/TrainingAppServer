@@ -54,36 +54,39 @@ public class BoxerProfileController {
             List<String> paramKey = Collections.list(httpServletRequest.getParameterNames());
             JSONObject resultJson = new JSONObject();
             if (iUserDao.confirmToken(user.getUserName(), token)) {
-                user.setDateOfBirthday(httpServletRequest.getParameter(Constants.KEY_DATE_OF_BIRTHDAY));
-                user.setGender((httpServletRequest.getParameter(Constants.KEY_GENDER).equals("M")));
+                if (paramKey.contains(Constants.KEY_DATE_OF_BIRTHDAY) && httpServletRequest.getParameter(Constants.KEY_DATE_OF_BIRTHDAY)!=null) {
+                    user.setDateOfBirthday(httpServletRequest.getParameter(Constants.KEY_DATE_OF_BIRTHDAY));
+                }
+                if (paramKey.contains(Constants.KEY_GENDER) && httpServletRequest.getParameter(Constants.KEY_GENDER)!=null) {
+                    user.setGender((httpServletRequest.getParameter(Constants.KEY_GENDER).equals("M")));
+                }
                 BoxerProfile boxerProfile = user.getBoxerProfile();
-                if (paramKey.contains(Constants.KEY_HEIGHT))
-                    try {
-                        boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_HEIGHT)));
-                    } catch (Exception ignore) {}
-                if (paramKey.contains(Constants.KEY_WEIGHT))
-                    try {
-                        boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_WEIGHT)));
-                    } catch (Exception ignore) {}
-                if (paramKey.contains(Constants.KEY_STANCE))
+                if (paramKey.contains(Constants.KEY_HEIGHT) && httpServletRequest.getParameter(Constants.KEY_HEIGHT)!=null) {
+                    boxerProfile.setHeight(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_HEIGHT)));
+                }
+                if (paramKey.contains(Constants.KEY_WEIGHT) && httpServletRequest.getParameter(Constants.KEY_WEIGHT)!=null) {
+                    boxerProfile.setWeight(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_WEIGHT)));
+                }
+                if (paramKey.contains(Constants.KEY_STANCE) && httpServletRequest.getParameter(Constants.KEY_STANCE)!=null) {
                     boxerProfile.setStance(httpServletRequest.getParameter(Constants.KEY_STANCE));
-                if (paramKey.contains(Constants.KEY_SKILL_LEVEL))
+                }
+                if (paramKey.contains(Constants.KEY_SKILL_LEVEL) && httpServletRequest.getParameter(Constants.KEY_SKILL_LEVEL)!=null) {
                     boxerProfile.setSkillLevel(httpServletRequest.getParameter(Constants.KEY_SKILL_LEVEL));
-                if (paramKey.contains(Constants.KEY_GLOVE_TYPE))
+                }
+                if (paramKey.contains(Constants.KEY_GLOVE_TYPE) && httpServletRequest.getParameter(Constants.KEY_GLOVE_TYPE)!=null) {
                     boxerProfile.setGloveType(httpServletRequest.getParameter(Constants.KEY_GLOVE_TYPE));
-                if (paramKey.contains(Constants.KEY_REACH))
-                    try {
-                        boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_REACH)));
-                    } catch (Exception ignore) {}
-
-                if (paramKey.contains(Constants.KEY_PHOTO)) {
+                }
+                if (paramKey.contains(Constants.KEY_REACH) && httpServletRequest.getParameter(Constants.KEY_REACH)!=null) {
+                    boxerProfile.setReach(Integer.parseInt(httpServletRequest.getParameter(Constants.KEY_REACH)));
+                }
+                /*if (paramKey.contains(Constants.KEY_PHOTO) && httpServletRequest.getParameter(Constants.KEY_PHOTO)!=null) {
                     byte[] photo = httpServletRequest.getParameter(Constants.KEY_PHOTO).getBytes();
                     String photoUrl = "photo/" + getFileName() + ".jpg";
                     FileOutputStream fos = new FileOutputStream(photoUrl);
                     fos.write(photo);
                     fos.close();
                     resultJson.put(Constants.KEY_PHOTO_URL, photoUrl);
-                }
+                }*/
 
                 resultJson.put(Constants.KEY_ACCESS, true);
                 resultJson.put(Constants.KEY_SUCCESS, true);

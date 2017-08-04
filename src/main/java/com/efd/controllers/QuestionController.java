@@ -50,7 +50,6 @@ public class QuestionController {
                 }
             });
             JSONObject resultJson = new JSONObject();
-            resultJson.put(Constants.KEY_ACCESS, true);
             resultJson.put(Constants.KEY_SUCCESS,true);
             resultJson.put(Constants.KEY_QUESTION_LIST, objects);
             httpServletResponse.setContentType(Constants.KEY_APPLICATION_JSON);
